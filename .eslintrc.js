@@ -1,6 +1,6 @@
 module.exports = {
   root: true,
-  extends: '@react-native',
+  extends: ['@react-native', 'prettier'],
   settings: {},
   plugins: ['import', 'unused-imports', '@typescript-eslint'],
   rules: {

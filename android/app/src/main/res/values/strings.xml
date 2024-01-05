@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">madcamp_proj2</string>
+    <string name="kakao_app_key">2cdfe1f3a0c75344de0fcbc93404120c</string>
 </resources>

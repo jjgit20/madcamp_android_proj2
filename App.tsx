@@ -5,8 +5,13 @@
  * @format
  */
 import {BACKEND_URL} from '@env';
+import {
+  getProfile,
+  login,
+  loginWithKakaoAccount,
+} from '@react-native-seoul/kakao-login';
 import axios from 'axios';
-import React from 'react';
+import React, {useState} from 'react';
 import type {PropsWithChildren} from 'react';
 import {
   Pressable,
@@ -30,9 +35,9 @@ type SectionProps = PropsWithChildren<{
   title: string;
 }>;
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  const logReturn = () => {
+function App(): React.JSX.Element {
+  const [userInfo, setUserInfo] = useState({});
+  const logReturn = async () => {
     console.log(BACKEND_URL);
     axios
       .get(`${BACKEND_URL}`)
@@ -40,53 +45,41 @@ function Section({children, title}: SectionProps): React.JSX.Element {
         console.log(response.data);
       })
       .catch(e => console.log(e));
+    await loginWithKakaoAccount()
+      .then(res => {
+        console.log(res);
+        setUserInfo(res);
+        getProfile(res.accessToken).then(res => {
+          console.log('ayy', res),
+            axios
+              .post(`${BACKEND_URL}/auth/kakao/login`, {
+                kakaoId: res.id,
+              })
+              .then(res => console.log(res.data))
+              .catch(err => console.log('ERROR LOGGING IN'));
+          axios
+            .post(`${BACKEND_URL}/auth/kakao/signup`, {
+              kakaoId: res.id,
+              username: 'tester',
+              password: 'testpwd',
+              nickname: res.nickname,
+              email: res.email,
+              image: res.profileImageUrl,
+            })
+            .then(res => console.log(res.data))
+            .catch(err => console.log('ERROR SIGNING UP:', err));
+        });
+      })
+      .catch(err => console.log(err));
   };
-  return (
-    <Pressable onPress={logReturn}>
-      <View>
-        <Text>hihihihi</Text>
-      </View>
-    </Pressable>
-  );
-}
-
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+    <SafeAreaView>
+      <Pressable onPress={logReturn}>
+        <View>
+          <Text>hihihihi</Text>
         </View>
-      </ScrollView>
+      </Pressable>
     </SafeAreaView>
   );
 }
