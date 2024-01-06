@@ -4,103 +4,58 @@
  *
  * @format
  */
-import {BACKEND_URL} from '@env';
-import {
-  getProfile,
-  login,
-  loginWithKakaoAccount,
-} from '@react-native-seoul/kakao-login';
-import axios from 'axios';
-import React, {useState} from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View,
-  useColorScheme,
-} from 'react-native';
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import MainTabs from '@src/navigation/MainTabs';
+import LoginScreen from '@src/screens/LoginScreen';
+import PlanEditScreen from '@src/screens/PlanEditScreen';
+import PlanViewScreen from '@src/screens/PlanViewScreen';
+import SignUpScreen from '@src/screens/SignUpScreen';
+import React, {PropsWithChildren, useEffect, useState} from 'react';
+import EncryptedStorage from 'react-native-encrypted-storage';
+
+import {MainStackParamsList} from './types';
 
 type SectionProps = PropsWithChildren<{
   title: string;
 }>;
 
+export const Stack = createStackNavigator<MainStackParamsList>();
+
 function App(): React.JSX.Element {
-  const [userInfo, setUserInfo] = useState({});
-  const logReturn = async () => {
-    console.log(BACKEND_URL);
-    axios
-      .get(`${BACKEND_URL}`)
-      .then(response => {
-        console.log(response.data);
-      })
-      .catch(e => console.log(e));
-    await loginWithKakaoAccount()
-      .then(res => {
-        console.log(res);
-        setUserInfo(res);
-        getProfile(res.accessToken).then(res => {
-          console.log('ayy', res),
-            axios
-              .post(`${BACKEND_URL}/auth/kakao/login`, {
-                kakaoId: res.id,
-              })
-              .then(res => console.log(res.data))
-              .catch(err => console.log('ERROR LOGGING IN'));
-          axios
-            .post(`${BACKEND_URL}/auth/kakao/signup`, {
-              kakaoId: res.id,
-              username: 'tester',
-              password: 'testpwd',
-              nickname: res.nickname,
-              email: res.email,
-              image: res.profileImageUrl,
-            })
-            .then(res => console.log(res.data))
-            .catch(err => console.log('ERROR SIGNING UP:', err));
-        });
-      })
-      .catch(err => console.log(err));
+  const [userSession, setUserSession] = useState();
+  const retrieveUserSession = async () => {
+    try {
+      const userSession = await EncryptedStorage.getItem('user_session');
+      setUserSession(userSession);
+    } catch (error) {
+      console.error('token getting error: ', error);
+    }
   };
+  useEffect(() => {
+    retrieveUserSession();
+  }, []);
 
   return (
-    <SafeAreaView>
-      <Pressable onPress={logReturn}>
-        <View>
-          <Text>hihihihi</Text>
-        </View>
-      </Pressable>
-    </SafeAreaView>
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{headerShown: false}}>
+        {!userSession && (
+          <React.Fragment>
+            <Stack.Screen name="LoginScreen" component={LoginScreen} />
+            <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
+          </React.Fragment>
+        )}
+        {userSession && (
+          <React.Fragment>
+            <Stack.Screen name="MainTabs" component={MainTabs} />
+            <Stack.Screen name="PlanEditScreen" component={PlanEditScreen} />
+            <Stack.Screen name="PlanViewScreen" component={PlanViewScreen} />
+          </React.Fragment>
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
 export default App;
