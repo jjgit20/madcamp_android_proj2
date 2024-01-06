@@ -12,11 +12,14 @@ import {Text} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
+import {AuthContext} from '../../App';
 import {MainStackParamsList} from '../../types';
 
 type Props = StackScreenProps<MainStackParamsList, 'SignUpScreen'>;
 
 const SignUpScreen = ({route, navigation}: Props) => {
+  const {signup} = React.useContext(AuthContext);
+
   const handleSignUpButton = async () => {
     try {
       const signUpResponse = await axios.post(
@@ -37,7 +40,7 @@ const SignUpScreen = ({route, navigation}: Props) => {
             token: signUpResponse.data.token,
           }),
         );
-        navigation.navigate('MainTabs');
+        signup(signUpResponse.data.token);
       }
       console.log(signUpResponse.data);
 

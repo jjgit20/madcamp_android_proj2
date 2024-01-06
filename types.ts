@@ -11,6 +11,12 @@ export type MainStackParamsList = {
   };
 };
 
+export interface AuthContextType {
+  login: (token: string) => Promise<void>;
+  logout: () => void;
+  signup: (token: string) => Promise<void>;
+}
+
 export type MainTabsParamsList = {
   FinderScreen: undefined;
   PlansScreen: undefined;

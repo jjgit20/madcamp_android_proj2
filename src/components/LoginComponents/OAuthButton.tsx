@@ -12,6 +12,7 @@ import React from 'react';
 import {Text} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 
+import {AuthContext} from '../../../App';
 import {MainStackParamsList} from '../../../types';
 import {
   StyledPressable,
@@ -20,6 +21,8 @@ import {
 
 const OAuthButton = () => {
   const navigation = useNavigation<StackNavigationProp<MainStackParamsList>>();
+  const {login} = React.useContext(AuthContext);
+
   const handleKakaoButton = async () => {
     try {
       const kakaoLoginResponse = await loginWithKakaoAccount();
@@ -39,6 +42,7 @@ const OAuthButton = () => {
             token: loginResponse.data.token,
           }),
         );
+        login(loginResponse.data.token);
       } else {
         console.log(kakaoProfileResponse);
         navigation.navigate('SignUpScreen', {
