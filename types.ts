@@ -9,6 +9,7 @@ export type MainStackParamsList = {
     nickname: string;
     image: string;
   };
+  SearchPlaceScreen: undefined;
 };
 
 export interface AuthContextType {
@@ -22,3 +23,33 @@ export type MainTabsParamsList = {
   PlansScreen: undefined;
   UserScreen: {userId: number};
 };
+
+export interface PersonalPlansResponseType {
+  planId: number;
+  startDate: string;
+  endDate: string;
+  country: string;
+  city: string;
+  forks: any;
+  likes: any;
+  image: string;
+  isPublic: boolean;
+}
+
+export interface PersonalPlansDetailedResponseType {
+  planId: number;
+  startDate: string;
+  endDate: string;
+  country: string;
+  city: string;
+  forks: any;
+  likes: any;
+  image: string;
+  isPublic: boolean;
+  cash: number;
+}
+
+export interface ImageType {
+  uri: string | null;
+  type: string | null;
+}

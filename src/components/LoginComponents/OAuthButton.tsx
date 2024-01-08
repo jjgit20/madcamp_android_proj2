@@ -1,4 +1,3 @@
-import {BACKEND_URL} from '@env';
 import {
   getProfile,
   loginWithKakaoAccount,
@@ -7,7 +6,7 @@ import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import KakaoIcon from '@src/assets/icons/oauth_kakao.svg';
 import globalStyles from '@src/styles/style';
-import axios from 'axios';
+import axiosInstance from '@src/utils/axiosService';
 import React from 'react';
 import {Text} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
@@ -29,17 +28,15 @@ const OAuthButton = () => {
       const kakaoProfileResponse = await getProfile(
         kakaoLoginResponse.accessToken,
       );
-      const loginResponse = await axios.post(
-        `${BACKEND_URL}/auth/kakao/login`,
-        {
-          kakaoId: kakaoProfileResponse.id,
-        },
-      );
+      const loginResponse = await axiosInstance.post(`/auth/kakao/login`, {
+        kakaoId: kakaoProfileResponse.id,
+      });
       if (loginResponse.data.signedUp === true) {
         await EncryptedStorage.setItem(
           'user_session',
           JSON.stringify({
             token: loginResponse.data.token,
+            userId: loginResponse.data.userId,
           }),
         );
         login(loginResponse.data.token);
@@ -68,7 +65,7 @@ const OAuthButton = () => {
           justifyContent: 'flex-start',
         }}>
         <KakaoIcon width={25} height={25} />
-        <Text style={globalStyles.h2}>카카오 로그인</Text>
+        <Text style={globalStyles.h5}>카카오 로그인</Text>
       </StyledPressable>
     </StyledPressableView>
   );
