@@ -131,6 +131,7 @@ const PlanCardType1 = ({plan}: {plan: any}) => {
   // Use the function to calculate the duration
   const durationDays = getDurationInDays(plan.startDate, plan.endDate);
   const formattedDuration = `${durationDays}박${durationDays + 1}일`;
+  const cash = Math.round(plan.cash / 10000);
 
   return (
     <ImageBackground source={{uri: plan.image}} style={styles.card}>
@@ -165,7 +166,7 @@ const PlanCardType1 = ({plan}: {plan: any}) => {
           />
           <Text style={styles.interactionText}>{totalForks}</Text>
         </TouchableOpacity>
-        <Text style={styles.price}>{plan.cash}</Text>
+        <Text style={styles.price}>{cash}만원</Text>
       </View>
     </ImageBackground>
   );
