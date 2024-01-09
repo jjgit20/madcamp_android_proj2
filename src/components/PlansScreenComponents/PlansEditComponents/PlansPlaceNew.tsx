@@ -1,6 +1,5 @@
 import {GOOGLE_API_KEY} from '@env';
 import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
-import {StackScreenProps} from '@react-navigation/stack';
 import {PlansClose} from '@src/components/PlansScreenComponents/PlansClose';
 import PlaceIcon from '@src/components/PlansScreenComponents/PlansEditComponents/PlaceIcon';
 import {
@@ -23,19 +22,24 @@ import React, {useMemo, useRef, useState} from 'react';
 import {Text, View} from 'react-native';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 
-import {MainStackParamsList, Place} from '../../types';
+import {Place, PlanPlace} from '../../../../types';
 
-type Props = StackScreenProps<
-  MainStackParamsList,
-  'SearchPlaceScreen',
-  'Stack'
->;
-
-const SearchPlaceScreen = ({route, navigation}: Props) => {
+const PlansPlaceNew = ({
+  planId,
+  orderInDay,
+  visitDate,
+  closeModal,
+  newPlanPlace,
+}: {
+  planId: number;
+  orderInDay: number;
+  visitDate: number;
+  closeModal: () => void;
+  newPlanPlace: (place: PlanPlace) => void;
+}) => {
   const [place, setPlace] = useState<Place>();
   const snapPoints = useMemo(() => ['50%', '75%'], []);
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  console.log(route, place);
 
   const handleNewPlanPlace = async () => {
     if (!place) {
@@ -43,15 +47,15 @@ const SearchPlaceScreen = ({route, navigation}: Props) => {
     }
     try {
       const placeData = {
-        orderInDay: route.params.orderInDay,
-        visitDate: new Date(route.params.visitDate),
+        orderInDay: orderInDay,
+        visitDate: new Date(visitDate),
       };
       const placeResponse = await axiosInstance.post(
-        `/places/${place.placeId}/plans/${route.params.planId}`,
+        `/places/${place.placeId}/plans/${planId}`,
         placeData,
       );
-      setPlace(placeResponse.data);
-      navigation.goBack();
+      newPlanPlace(placeResponse.data);
+      closeModal();
     } catch (error) {
       console.log('Error adding place to plan: ', error);
     }
@@ -60,7 +64,7 @@ const SearchPlaceScreen = ({route, navigation}: Props) => {
   return (
     <BottomSheetModalProvider>
       <StyledScreenView style={{backgroundColor: '#F9F9F9'}}>
-        <PlansClose color={BLACK} />
+        <PlansClose color={BLACK} customBack={() => closeModal()} />
 
         <GooglePlacesAutocomplete
           placeholder={'검색어를 입력하세요'}
@@ -77,7 +81,6 @@ const SearchPlaceScreen = ({route, navigation}: Props) => {
                 placeData,
               );
               setPlace(placeResponse.data);
-              console.log(details?.types);
               bottomSheetModalRef.current?.present();
             } catch (error) {
               console.log('Error with google autocomplete: ', error);
@@ -92,60 +95,58 @@ const SearchPlaceScreen = ({route, navigation}: Props) => {
           fetchDetails
         />
         {place && (
-          <View>
-            <BottomSheetModal
+          <BottomSheetModal
+            style={{
+              zIndex: 9,
+              elevation: 50,
+              marginHorizontal: 10,
+              backgroundColor: 'transparent',
+            }}
+            handleIndicatorStyle={{width: '20%', marginTop: 5}}
+            snapPoints={snapPoints}
+            ref={bottomSheetModalRef}>
+            <View
               style={{
-                zIndex: 10,
-                elevation: 50,
-                marginHorizontal: 10,
-                backgroundColor: 'transparent',
-              }}
-              handleIndicatorStyle={{width: '20%', marginTop: 5}}
-              snapPoints={snapPoints}
-              ref={bottomSheetModalRef}>
+                flex: 1,
+                gap: 30,
+                alignItems: 'center',
+                padding: 30,
+              }}>
               <View
                 style={{
-                  flex: 1,
-                  gap: 30,
-                  alignItems: 'center',
-                  padding: 30,
+                  borderRadius: 100,
+                  backgroundColor: BLUE_LIGHT,
+                  padding: 35,
                 }}>
-                <View
-                  style={{
-                    borderRadius: 100,
-                    backgroundColor: BLUE_LIGHT,
-                    padding: 35,
-                  }}>
-                  <PlaceIcon
-                    type={place.placeType}
-                    customSize={45}
-                    customColor={BLACK}
-                  />
-                </View>
-                <Text style={[globalStyles.h2, {color: BLACK}]}>
-                  {place.name}
-                </Text>
-
-                <StyledPressableView>
-                  <StyledPressable
-                    onPress={handleNewPlanPlace}
-                    android_ripple={{color: BLUE_LIGHT_PRESSED}}
-                    style={{backgroundColor: BLUE_LIGHT}}>
-                    <Text style={[globalStyles.h5, {color: BLUE}]}>
-                      내 여행에 추가하기
-                    </Text>
-                  </StyledPressable>
-                </StyledPressableView>
+                <PlaceIcon
+                  type={place.placeType}
+                  customSize={45}
+                  customColor={BLACK}
+                />
               </View>
-            </BottomSheetModal>
-          </View>
+              <Text style={[globalStyles.h2, {color: BLACK}]}>
+                {place.name}
+              </Text>
+
+              <StyledPressableView>
+                <StyledPressable
+                  onPress={handleNewPlanPlace}
+                  android_ripple={{color: BLUE_LIGHT_PRESSED}}
+                  style={{backgroundColor: BLUE_LIGHT}}>
+                  <Text style={[globalStyles.h5, {color: BLUE}]}>
+                    내 여행에 추가하기
+                  </Text>
+                </StyledPressable>
+              </StyledPressableView>
+            </View>
+          </BottomSheetModal>
         )}
       </StyledScreenView>
     </BottomSheetModalProvider>
   );
 };
 
-export default React.memo(SearchPlaceScreen);
+export default React.memo(PlansPlaceNew);
 
 const styles = {
   search: {

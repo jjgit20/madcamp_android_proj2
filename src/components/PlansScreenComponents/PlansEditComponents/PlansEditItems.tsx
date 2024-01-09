@@ -1,7 +1,7 @@
 import {
   StyledDateInput,
   StyledInputView,
-  StyledMoneyInput,
+  StyledOverallMoneyInput,
   StyledSelectInput,
   StyledTextInput,
 } from '@src/components/StyledComponents/StyledInput';
@@ -13,7 +13,12 @@ import {
   seasons,
 } from '@src/utils/\bselectService';
 import React, {useMemo} from 'react';
-import {Text, View} from 'react-native';
+import {
+  NativeSyntheticEvent,
+  Text,
+  TextInputChangeEventData,
+  View,
+} from 'react-native';
 
 import {PersonalPlansDetailedResponseType} from '../../../../types';
 
@@ -100,12 +105,37 @@ const PlansEditItems = ({
                 {name}
               </Text>
               {type === 'select' && (
-                <StyledSelectInput name={name} options={options} />
+                <StyledSelectInput
+                  name={name}
+                  options={options}
+                  value={
+                    (plan &&
+                      plan[id as keyof PersonalPlansDetailedResponseType]) ||
+                    null
+                  }
+                  onChange={({label, value}: {label: string; value: string}) =>
+                    modifyPlan(id, value)
+                  }
+                />
               )}
-              {type === 'money' && <StyledMoneyInput />}
+              {type === 'money' && (
+                <StyledOverallMoneyInput
+                  money={plan?.cash || 0}
+                  setMoney={(money: number) => modifyPlan('cash', money)}
+                />
+              )}
               {type === 'string' && (
                 <StyledInputView>
-                  <StyledTextInput style={{marginHorizontal: 10}} />
+                  <StyledTextInput
+                    style={{marginHorizontal: 10}}
+                    value={
+                      plan &&
+                      plan[id as keyof PersonalPlansDetailedResponseType]
+                    }
+                    onChange={(
+                      e: NativeSyntheticEvent<TextInputChangeEventData>,
+                    ) => modifyPlan(id, e.nativeEvent.text)}
+                  />
                 </StyledInputView>
               )}
               {type === 'date' && (

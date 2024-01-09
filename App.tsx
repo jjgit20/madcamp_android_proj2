@@ -11,7 +11,6 @@ import MainTabs from '@src/navigation/MainTabs';
 import LoginScreen from '@src/screens/LoginScreen';
 import PlanEditScreen from '@src/screens/PlanEditScreen';
 import PlanViewScreen from '@src/screens/PlanViewScreen';
-import SearchPlaceScreen from '@src/screens/SearchPlaceScreen';
 import SignUpScreen from '@src/screens/SignUpScreen';
 import React, {
   PropsWithChildren,
@@ -128,10 +127,6 @@ function App(): React.JSX.Element {
               <Stack.Screen name="MainTabs" component={MainTabs} />
               <Stack.Screen name="PlanEditScreen" component={PlanEditScreen} />
               <Stack.Screen name="PlanViewScreen" component={PlanViewScreen} />
-              <Stack.Screen
-                name="SearchPlaceScreen"
-                component={SearchPlaceScreen}
-              />
             </React.Fragment>
           )}
         </Stack.Navigator>

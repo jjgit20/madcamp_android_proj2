@@ -4,8 +4,10 @@ import {PlansClose} from '@src/components/PlansScreenComponents/PlansClose';
 import {PlansEditDays} from '@src/components/PlansScreenComponents/PlansEditComponents/PlansEditDays';
 import {PlansEditImage} from '@src/components/PlansScreenComponents/PlansEditComponents/PlansEditImage';
 import PlansEditItems from '@src/components/PlansScreenComponents/PlansEditComponents/PlansEditItems';
-import {StyledModal} from '@src/components/PlansScreenComponents/PlansEditComponents/PlansPlaceDelete';
+import {PlansPlaceDelete} from '@src/components/PlansScreenComponents/PlansEditComponents/PlansPlaceDelete';
+import PlansPlaceNew from '@src/components/PlansScreenComponents/PlansEditComponents/PlansPlaceNew';
 import PlansSave from '@src/components/PlansScreenComponents/PlansEditComponents/PlansSave';
+import {PlansSaveFirst} from '@src/components/PlansScreenComponents/PlansEditComponents/PlansSaveFirst';
 import {StyledScrollView} from '@src/components/StyledComponents/StyledScreenView';
 import {
   BLACK,
@@ -22,25 +24,49 @@ import {
   ImageType,
   MainStackParamsList,
   PersonalPlansDetailedResponseType,
+  PlanPlace,
 } from '../../types';
 
 type Props = StackScreenProps<MainStackParamsList, 'PlanEditScreen', 'Stack'>;
 
+const initPlan: PersonalPlansDetailedResponseType = {
+  startDate: new Date().toDateString(),
+  endDate: new Date().toDateString(),
+  country: null,
+  city: null,
+  forks: 0,
+  likes: 0,
+  image: null,
+  isPublic: false,
+  cash: 0,
+  places: [],
+  isNull: true,
+};
+
 const PlanEditScreen = ({route, navigation}: Props) => {
   const [plan, setPlan] = useState<PersonalPlansDetailedResponseType | null>(
-    null,
+    initPlan,
   );
-  const [image, setImage] = useState<ImageType>({uri: null, type: null});
-  const [days, setDays] = useState<Date[]>([]);
+  const [image, setImage] = useState<ImageType>({
+    uri: null,
+    type: null,
+    name: null,
+  });
+  const [days, setDays] = useState<Date[]>(
+    dateDifference(initPlan.startDate as string, initPlan.endDate as string),
+  );
 
   const getPlan = useCallback(async () => {
-    if (plan == null && route.params.planId !== 0) {
+    if (plan?.isNull === true && route.params.planId !== 0) {
       const personalPlansDetailedResponse = await axiosInstance.get(
         `/plans/${route.params.planId}`,
       );
-      console.log('heheheh', personalPlansDetailedResponse.data);
-      setPlan(personalPlansDetailedResponse.data);
-      setImage({uri: personalPlansDetailedResponse.data.image, type: null});
+      setPlan({...personalPlansDetailedResponse.data, isNull: false});
+      setImage({
+        uri: personalPlansDetailedResponse.data.image,
+        type: null,
+        name: null,
+      });
       setDays(
         dateDifference(
           personalPlansDetailedResponse.data.startDate,
@@ -78,15 +104,86 @@ const PlanEditScreen = ({route, navigation}: Props) => {
     [],
   );
 
-  const [isVisible, setIsVisible] = useState(false);
+  const [isDeleteVisible, setIsDeleteVisible] = useState(false);
   const [planPlaceDelId, setPlanPlaceDelId] = useState(0);
+  const [isNewVisible, setIsNewVisible] = useState(false);
+  const [newParams, setNewParams] = useState({orderInDay: 0, visitDate: 0});
+
+  const savePlan = async (redirect: boolean) => {
+    const formData = new FormData();
+    const headers = {
+      'Content-Type': 'multipart/form-data',
+      Accept: 'application/json',
+    };
+    try {
+      if (plan !== null) {
+        if (image.name !== null) {
+          formData.append('file', image);
+        }
+
+        if (typeof plan.startDate === 'string') {
+          plan.startDate = new Date(plan.startDate);
+        }
+        if (typeof plan.endDate === 'string') {
+          plan.endDate = new Date(plan.endDate);
+        }
+
+        Object.keys(plan).forEach(key => {
+          if (key === 'startDate' || key === 'endDate') {
+            formData.append(
+              key,
+              plan[key as keyof PersonalPlansDetailedResponseType].getTime(),
+            );
+          } else if (
+            typeof plan[key as keyof PersonalPlansDetailedResponseType] ===
+            'object'
+          ) {
+            formData.append(
+              key,
+              JSON.stringify(
+                plan[key as keyof PersonalPlansDetailedResponseType],
+              ),
+            );
+          } else {
+            formData.append(
+              key,
+              plan[key as keyof PersonalPlansDetailedResponseType],
+            );
+          }
+        });
+        let newPlanId = route.params.planId;
+        if (route.params.planId === 0) {
+          const newPlanResponse = await axiosInstance.post(`/plans`, formData, {
+            headers,
+          });
+          navigation.navigate('PlanEditScreen', {
+            planId: newPlanResponse.data.planId,
+          });
+          newPlanId = newPlanResponse.data.planId;
+        } else {
+          axiosInstance
+            .patch(`/plans/${route.params.planId}`, formData, {
+              headers,
+            })
+            .then(res => console.log(res))
+            .catch(err => console.log(err)); // not error...idk why this is flagging
+        }
+
+        if (redirect) {
+          navigation.navigate('PlanViewScreen', {planId: newPlanId});
+        }
+      }
+    } catch (error) {
+      console.error('Error:', JSON.stringify(error));
+    }
+  };
 
   return (
     <React.Fragment>
-      <StyledModal
-        isVisible={isVisible}
+      <PlansPlaceDelete
+        isVisible={isDeleteVisible}
         planPlaceDelId={planPlaceDelId}
-        closeModal={() => setIsVisible(false)}
+        closeModal={() => setIsDeleteVisible(false)}
         delPlanPlace={() =>
           modifyPlan(
             'places',
@@ -96,12 +193,35 @@ const PlanEditScreen = ({route, navigation}: Props) => {
           )
         }
       />
-      <View style={StyleSheet.absoluteFill}>
+      {isNewVisible && route.params.planId !== 0 && (
+        <PlansPlaceNew
+          planId={route.params.planId}
+          orderInDay={newParams.orderInDay}
+          visitDate={newParams.visitDate}
+          closeModal={() => setIsNewVisible(false)}
+          newPlanPlace={(place: PlanPlace) => {
+            if (!plan?.places) {
+              return;
+            }
+            modifyPlan('places', [...plan?.places, place]);
+          }}
+        />
+      )}
+      {isNewVisible && route.params.planId === 0 && (
+        <PlansSaveFirst
+          isVisible={isNewVisible}
+          closeModal={() => setIsNewVisible(false)}
+          savePlan={() => savePlan(false)}
+        />
+      )}
+      <View style={[StyleSheet.absoluteFill, {zIndex: -1}]}>
         <PlansClose color={WHITE} />
-        <PlansSave />
+        <PlansSave savePlan={() => savePlan(true)} />
         <PlansEditImage
           image={image}
-          setImage={(uri: string, type: string) => setImage({uri, type})}
+          setImage={(uri: string, type: string, name: string) =>
+            setImage({uri, type, name})
+          }
           plan={plan}
         />
         <StyledScrollView
@@ -122,7 +242,6 @@ const PlanEditScreen = ({route, navigation}: Props) => {
               key={index}
               day={index + 1}
               date={day.getTime()}
-              planId={route.params.planId}
               places={
                 (plan?.places &&
                   plan?.places.filter(
@@ -131,10 +250,26 @@ const PlanEditScreen = ({route, navigation}: Props) => {
                   )) ||
                 []
               }
-              setPlan={() => setPlan(null)}
               openModal={(id: number) => {
-                setIsVisible(true);
+                setIsDeleteVisible(true);
                 setPlanPlaceDelId(id);
+              }}
+              openNewModal={(orderInDay: number, visitDate: number) => {
+                setIsNewVisible(true);
+                setNewParams({orderInDay, visitDate});
+              }}
+              changeCash={(planPlaceId: number, money: number) => {
+                if (!plan) {
+                  return;
+                }
+                const updatedPlaces = plan.places.map(place => {
+                  if (place.planPlaceId === planPlaceId) {
+                    // Update the cash property for the matching planPlaceId
+                    return {...place, money: money};
+                  }
+                  return place;
+                });
+                modifyPlan('places', updatedPlaces);
               }}
             />
           ))}

@@ -30,7 +30,7 @@ export const PlansCard = ({plan}: {plan: PersonalPlansResponseType}) => {
       Math.floor(startDate.getTime() / (1000 * 60 * 60 * 24)) -
       Math.floor(todayDate.getTime() / (1000 * 60 * 60 * 24));
 
-    if (DDay == 0) {
+    if (DDay === 0) {
       return 'D-DAY';
     } else if (DDay > 0) {
       return `D-${DDay}`;
@@ -54,7 +54,11 @@ export const PlansCard = ({plan}: {plan: PersonalPlansResponseType}) => {
         onPress={handlePlanCard}
         android_ripple={{color: WHITE_PRESSED, foreground: true}}>
         <ImageBackground
-          source={{uri: plan.image}}
+          source={
+            plan.image && plan.image !== ''
+              ? {uri: plan.image}
+              : require('@src/assets/images/default_image.png')
+          }
           style={{
             width: '100%',
             height: 120,

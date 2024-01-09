@@ -6,7 +6,7 @@ import {
 import {ROUND_ICON_SIZE, WHITE_PRESSED} from '@src/styles/globalStyleVariables';
 import React from 'react';
 
-const PlansSave = () => {
+const PlansSave = ({savePlan}: {savePlan: () => Promise<void>}) => {
   return (
     <StyledRoundPressableView
       style={{
@@ -16,7 +16,7 @@ const PlansSave = () => {
         zIndex: 9,
       }}>
       <StyledRoundPressable
-        // onPress={handleEditImage}
+        onPress={savePlan}
         android_ripple={{color: WHITE_PRESSED, foreground: true}}>
         <SaveIcon width={ROUND_ICON_SIZE} height={ROUND_ICON_SIZE} />
       </StyledRoundPressable>

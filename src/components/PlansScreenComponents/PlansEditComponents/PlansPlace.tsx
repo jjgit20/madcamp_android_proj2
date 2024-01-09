@@ -17,12 +17,14 @@ const PlansPlace = ({
   cash,
   planPlaceId,
   openModal,
+  changeCash,
 }: {
   name: string;
   type: string;
   cash: number;
   planPlaceId: number;
   openModal: (id: number) => void;
+  changeCash: (planPlaceId: number, money: number) => void;
 }) => {
   const removePlanPlace = async () => {
     openModal(planPlaceId);
@@ -58,7 +60,10 @@ const PlansPlace = ({
             flex: 1,
           }}>
           <Text style={globalStyles.body1}>{name}</Text>
-          <StyledMoneyInput />
+          <StyledMoneyInput
+            money={cash}
+            changeCash={(money: number) => changeCash(planPlaceId, money)}
+          />
         </View>
       </View>
     </React.Fragment>

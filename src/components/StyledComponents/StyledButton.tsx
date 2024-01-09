@@ -25,7 +25,6 @@ export const StyledCardPressable = styled.Pressable`
 export const StyledCardPressableView = styled.View`
   border-radius: 20px;
   overflow: hidden;
-  elevation: 1;
 `;
 
 export const StyledRoundPressable = styled.Pressable`

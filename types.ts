@@ -9,7 +9,6 @@ export type MainStackParamsList = {
     nickname: string;
     image: string;
   };
-  SearchPlaceScreen: {planId: number; orderInDay: number; visitDate: number};
 };
 
 export interface AuthContextType {
@@ -32,22 +31,23 @@ export interface PersonalPlansResponseType {
   city: string;
   forks: any;
   likes: any;
-  image: string;
+  image: string | null;
   isPublic: boolean;
 }
 
 export interface PersonalPlansDetailedResponseType {
-  planId: number;
-  startDate: string;
-  endDate: string;
-  country: string;
-  city: string;
+  planId?: number;
+  startDate: string | Date;
+  endDate: string | Date;
+  country: string | null;
+  city: string | null;
   forks: any;
   likes: any;
-  image: string;
+  image: string | null;
   isPublic: boolean;
   cash: number;
   places: PlanPlace[];
+  isNull: boolean;
 }
 
 export interface PlanPlace {
@@ -67,4 +67,5 @@ export interface Place {
 export interface ImageType {
   uri: string | null;
   type: string | null;
+  name: string | null;
 }
