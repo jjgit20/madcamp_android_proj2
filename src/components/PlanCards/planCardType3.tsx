@@ -1,6 +1,8 @@
 import FavoritIcon from '@src/assets/icons/Favorite_fill.svg';
 import ForkIcon from '@src/assets/icons/fork_icon.svg';
 import ViewIcon from '@src/assets/icons/View.svg';
+import ViewHideIcon from '@src/assets/icons/View_hide.svg';
+
 import React from 'react';
 import {
   View,
