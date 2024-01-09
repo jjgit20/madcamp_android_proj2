@@ -1,7 +1,10 @@
+import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import FavoritIcon from '@src/assets/icons/Favorite_fill.svg';
 import ForkIcon from '@src/assets/icons/fork_icon.svg';
 import ViewIcon from '@src/assets/icons/View.svg';
 import ViewHideIcon from '@src/assets/icons/View_hide.svg';
+import {WHITE_PRESSED} from '@src/styles/globalStyleVariables';
 import React from 'react';
 import {
   View,
@@ -12,7 +15,11 @@ import {
   Dimensions,
 } from 'react-native';
 
-import {PersonalPlansResponseType} from '../../../types';
+import {MainStackParamsList, PersonalPlansResponseType} from '../../../types';
+import {
+  StyledCardPressable,
+  StyledCardPressableView,
+} from '../StyledComponents/StyledButton';
 
 const windowWidth = Dimensions.get('window').width;
 const cardWidth = windowWidth / 2 - 25;
@@ -21,13 +28,8 @@ const styles = StyleSheet.create({
   card: {
     flex: 1 / 2,
     height: cardWidth,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 16,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 24,
+    elevation: 3,
+    backgroundColor: 'rgba(0, 0, 0, 1)',
     borderRadius: 30, // 이제 이 속성은 card에 직접 적용됩니다.
     overflow: 'hidden', // borderRadius 적용을 위해 필요합니다.
     margin: 5,
@@ -82,38 +84,58 @@ const PlanCardType3 = ({plan}: {plan: PersonalPlansResponseType}) => {
 
   const VisibilityIcon = plan.isPublic ? ViewIcon : ViewHideIcon;
 
+  const navigation = useNavigation<StackNavigationProp<MainStackParamsList>>();
+  const handlePlanCard = () => {
+    navigation.navigate('PlanEditScreen', {planId: plan.planId});
+  };
+
   return (
-    <ImageBackground source={{uri: plan.image}} style={styles.card}>
-      <View style={styles.darkFilter} />
-      <View style={styles.columnWiseContainer}>
-        <View style={styles.rowWiseContainer}>
-          <Text style={styles.countryText}>{plan.country}</Text>
-          <VisibilityIcon
-            width={iconSize}
-            height={iconSize}
-            style={{color: '#ffffff'}}
-          />
-        </View>
-        <View style={styles.rowWiseContainer}>
-          <TouchableOpacity style={styles.interactionText}>
-            <FavoritIcon
-              width={iconSize}
-              height={iconSize}
-              style={{color: '#ffffff'}}
-            />
-            <Text style={styles.interactionText}>{totalLikes.toString()}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.interactionText}>
-            <ForkIcon
-              width={iconSize}
-              height={iconSize}
-              style={{color: '#ffffff'}}
-            />
-            <Text style={styles.interactionText}>{totalForks.toString()}</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </ImageBackground>
+    <StyledCardPressableView>
+      <StyledCardPressable
+        onPress={handlePlanCard}
+        android_ripple={{color: WHITE_PRESSED, foreground: true}}>
+        <ImageBackground
+          source={{uri: plan.image}}
+          style={{
+            flex: 1 / 2,
+            height: cardWidth,
+          }}>
+          <View style={styles.darkFilter} />
+          <View style={styles.columnWiseContainer}>
+            <View style={styles.rowWiseContainer}>
+              <Text style={styles.countryText}>{plan.country}</Text>
+              <VisibilityIcon
+                width={iconSize}
+                height={iconSize}
+                style={{color: '#ffffff'}}
+              />
+            </View>
+            <View style={styles.rowWiseContainer}>
+              <TouchableOpacity style={styles.interactionText}>
+                <FavoritIcon
+                  width={iconSize}
+                  height={iconSize}
+                  style={{color: '#ffffff'}}
+                />
+                <Text style={styles.interactionText}>
+                  {totalLikes.toString()}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.interactionText}>
+                <ForkIcon
+                  width={iconSize}
+                  height={iconSize}
+                  style={{color: '#ffffff'}}
+                />
+                <Text style={styles.interactionText}>
+                  {totalForks.toString()}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ImageBackground>
+      </StyledCardPressable>
+    </StyledCardPressableView>
   );
 };
 

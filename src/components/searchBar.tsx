@@ -10,6 +10,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center', // 센터 정렬
     alignItems: 'center', // 아이템 세로 정렬
     paddingVertical: 15,
+    backgroundColor: '#fc00000',
   },
   searchBox: {
     flex: 1, // 나머지 공간 모두 차지

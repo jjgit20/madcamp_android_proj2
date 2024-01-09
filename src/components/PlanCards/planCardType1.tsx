@@ -1,6 +1,9 @@
+import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import FavoritIcon from '@src/assets/icons/Favorite_fill.svg';
 import ForkIcon from '@src/assets/icons/fork_icon.svg';
 import StarIcon from '@src/assets/icons/Star_fill.svg';
+import {WHITE_PRESSED} from '@src/styles/globalStyleVariables';
 import {differenceInDays, parseISO} from 'date-fns';
 import React from 'react';
 import {
@@ -12,23 +15,22 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-const profileImage = require('../../assets/image/airplane.png');
-const backgroundImage = require('../../assets/image/tokyo.png');
+import {MainStackParamsList} from '../../../types';
+import {
+  StyledCardPressable,
+  StyledCardPressableView,
+} from '../StyledComponents/StyledButton';
 
 const styles = StyleSheet.create({
   card: {
-    width: '100%',
+    flex: 1,
     height: 380,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 16,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 24,
+    elevation: 15,
+    backgroundColor: 'rgba(0, 0, 0, 1)',
     borderRadius: 30, // 이제 이 속성은 card에 직접 적용됩니다.
     overflow: 'hidden', // borderRadius 적용을 위해 필요합니다.
-    marginBottom: 20,
+    marginHorizontal: 20,
+    marginVertical: 10,
   },
   subcard: {
     height: 100,
@@ -133,42 +135,61 @@ const PlanCardType1 = ({plan}: {plan: any}) => {
   const formattedDuration = `${durationDays}박${durationDays + 1}일`;
   const cash = Math.round(plan.cash / 10000);
 
-  return (
-    <ImageBackground source={{uri: plan.image}} style={styles.card}>
-      <View style={styles.subcard}>
-        <View style={styles.textContainer}>
-          <View style={styles.countryAndRankContainer}>
-            <Text style={styles.countryAndRatingText}>{plan.country}</Text>
-            <StarIcon width={iconSize} height={iconSize} />
-            <Text style={styles.countryAndRatingText}>{plan.rating}</Text>
-          </View>
-          <Text style={styles.cityAndDateContainer}>
-            {plan.city} - {formattedDuration}
-          </Text>
-        </View>
-        <Image source={{uri: plan.userId.image}} style={styles.profileImage} />
-      </View>
+  const navigation = useNavigation<StackNavigationProp<MainStackParamsList>>();
+  const handlePlanCard = () => {
+    navigation.navigate('PlanEditScreen', {planId: plan.planId});
+  };
 
-      <View style={styles.interactionContainer}>
-        <TouchableOpacity style={styles.interactionText}>
-          <FavoritIcon
-            width={iconSize}
-            height={iconSize}
-            style={{color: '#0989FF'}}
-          />
-          <Text style={styles.interactionText}>{totalLikes}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.interactionText}>
-          <ForkIcon
-            width={iconSize}
-            height={iconSize}
-            style={{color: '#0989FF'}}
-          />
-          <Text style={styles.interactionText}>{totalForks}</Text>
-        </TouchableOpacity>
-        <Text style={styles.price}>{cash}만원</Text>
-      </View>
-    </ImageBackground>
+  return (
+    <StyledCardPressableView>
+      <StyledCardPressable
+        onPress={handlePlanCard}
+        android_ripple={{color: WHITE_PRESSED, foreground: true}}>
+        <ImageBackground
+          source={{uri: plan.image}}
+          style={{
+            width: '100%',
+            height: 380,
+          }}>
+          <View style={styles.subcard}>
+            <View style={styles.textContainer}>
+              <View style={styles.countryAndRankContainer}>
+                <Text style={styles.countryAndRatingText}>{plan.country}</Text>
+                <StarIcon width={iconSize} height={iconSize} />
+                <Text style={styles.countryAndRatingText}>{plan.rating}</Text>
+              </View>
+              <Text style={styles.cityAndDateContainer}>
+                {plan.city} - {formattedDuration}
+              </Text>
+            </View>
+            <Image
+              source={{uri: plan.userId.image}}
+              style={styles.profileImage}
+            />
+          </View>
+
+          <View style={styles.interactionContainer}>
+            <TouchableOpacity style={styles.interactionText}>
+              <FavoritIcon
+                width={iconSize}
+                height={iconSize}
+                style={{color: '#0989FF'}}
+              />
+              <Text style={styles.interactionText}>{totalLikes}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.interactionText}>
+              <ForkIcon
+                width={iconSize}
+                height={iconSize}
+                style={{color: '#0989FF'}}
+              />
+              <Text style={styles.interactionText}>{totalForks}</Text>
+            </TouchableOpacity>
+            <Text style={styles.price}>{cash}만원</Text>
+          </View>
+        </ImageBackground>
+      </StyledCardPressable>
+    </StyledCardPressableView>
   );
 };
 

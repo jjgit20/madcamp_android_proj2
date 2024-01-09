@@ -8,13 +8,20 @@ import {
 import globalStyles from '@src/styles/style';
 import {dateFormatter} from '@src/utils/dateFormatter';
 import React, {useCallback, useMemo} from 'react';
-import {ImageBackground, Text, View} from 'react-native';
+import {ImageBackground, StyleSheet, Text, View} from 'react-native';
 
 import {MainStackParamsList, PersonalPlansResponseType} from '../../../types';
 import {
   StyledCardPressable,
   StyledCardPressableView,
 } from '../StyledComponents/StyledButton';
+
+const styles = StyleSheet.create({
+  shadowContainer: {
+    elevation: 3,
+    backgroundColor: 'rgba(0, 0, 0, 1)',
+  },
+});
 
 const days = ['일', '월', '화', '수', '목', '금', '토'];
 

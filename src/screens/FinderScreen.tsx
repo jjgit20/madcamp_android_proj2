@@ -7,8 +7,8 @@ import {StyleSheet, View, FlatList} from 'react-native';
 const styles = StyleSheet.create({
   container: {
     flex: 1, // 이 컨테이너가 화면 전체를 차지하도록 함
-    paddingHorizontal: 20, // 좌우에만 20px의 패딩 적용
     backgroundColor: 'rgb(255, 255, 255)',
+    paddingHorizontal: 20,
   },
   column: {
     flex: 1,
@@ -41,6 +41,7 @@ const FinderScreen = () => {
         data={plans}
         renderItem={renderItem}
         keyExtractor={item => item.planId}
+        contentContainerStyle={{gap: 15}}
       />
     </View>
   );
