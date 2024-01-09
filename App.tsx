@@ -93,13 +93,13 @@ function App(): React.JSX.Element {
     <AuthContext.Provider value={authContext}>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{headerShown: false}}>
-          {state?.token === null && (
+          {state?.token !== null && (
             <React.Fragment>
               <Stack.Screen name="LoginScreen" component={LoginScreen} />
               <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
             </React.Fragment>
           )}
-          {state?.token !== null && (
+          {state?.token === null && (
             <React.Fragment>
               <Stack.Screen name="MainTabs" component={MainTabs} />
               <Stack.Screen name="PlanEditScreen" component={PlanEditScreen} />
