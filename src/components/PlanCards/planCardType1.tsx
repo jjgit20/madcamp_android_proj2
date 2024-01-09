@@ -113,7 +113,7 @@ const PlanCardType1 = () => {
       <View style={styles.subcard}>
         <View style={styles.textContainer}>
           <View style={styles.countryAndRankContainer}>
-            <Text style={styles.countryAndRatingText}>일본</Text>
+            <Text style={styles.countryAndRatingText}>일본1</Text>
             <StarIcon width={iconSize} height={iconSize} />
             <Text style={styles.countryAndRatingText}>4.5</Text>
           </View>
@@ -124,11 +124,19 @@ const PlanCardType1 = () => {
 
       <View style={styles.interactionContainer}>
         <TouchableOpacity style={styles.interactionText}>
-          <FavoritIcon width={iconSize} height={iconSize} />
+          <FavoritIcon
+            width={iconSize}
+            height={iconSize}
+            style={{color: '#0989FF'}}
+          />
           <Text style={styles.interactionText}>637</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.interactionText}>
-          <ForkIcon width={iconSize} height={iconSize} />
+          <ForkIcon
+            width={iconSize}
+            height={iconSize}
+            style={{color: '#0989FF'}}
+          />
           <Text style={styles.interactionText}>2,853</Text>
         </TouchableOpacity>
         <Text style={styles.price}>160 만원</Text>
