@@ -7,9 +7,8 @@ import {
 } from '@src/components/StyledComponents/StyledInput';
 import {extraInfo, neededInfo} from '@src/screens/PlanEditScreen';
 import globalStyles from '@src/styles/style';
-import React from 'react';
+import React, {useMemo} from 'react';
 import {Text, View} from 'react-native';
-import {ItemType} from 'react-native-dropdown-picker';
 
 import {PersonalPlansDetailedResponseType} from '../../../../types';
 
@@ -27,7 +26,10 @@ const PlansEditItems = ({
     secondChange?: any,
   ) => void;
 }) => {
-  const currentList = type === 'needed' ? neededInfo : extraInfo;
+  const currentList = useMemo(
+    () => (type === 'needed' ? neededInfo : extraInfo),
+    [type],
+  );
   return (
     <React.Fragment>
       {currentList &&
@@ -37,12 +39,10 @@ const PlansEditItems = ({
               id,
               name,
               type,
-              options,
             }: {
               id: string;
               name: string;
               type: string;
-              options?: ItemType<string>[];
             },
             index: number,
           ) => (
@@ -58,7 +58,9 @@ const PlansEditItems = ({
                 style={[globalStyles.body1, {width: 50, textAlign: 'right'}]}>
                 {name}
               </Text>
-              {type === 'select' && <StyledSelectInput options={options} />}
+              {type === 'select' && (
+                <StyledSelectInput id={id} country={plan?.country} />
+              )}
               {type === 'money' && <StyledMoneyInput />}
               {type === 'string' && (
                 <StyledInputView>

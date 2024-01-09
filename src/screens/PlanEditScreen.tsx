@@ -5,9 +5,12 @@ import {PlansEditImage} from '@src/components/PlansScreenComponents/PlansEditCom
 import PlansEditItems from '@src/components/PlansScreenComponents/PlansEditComponents/PlansEditItems';
 import PlansSave from '@src/components/PlansScreenComponents/PlansEditComponents/PlansSave';
 import {StyledScrollView} from '@src/components/StyledComponents/StyledScreenView';
-import {BLACK, HEADING_VERTICAL_MARGIN} from '@src/styles/globalStyleVariables';
+import {
+  BLACK,
+  HEADING_VERTICAL_MARGIN,
+  WHITE,
+} from '@src/styles/globalStyleVariables';
 import globalStyles from '@src/styles/style';
-import {commonCountries} from '@src/utils/\bselectService';
 import axiosInstance from '@src/utils/axiosService';
 import {dateDifference} from '@src/utils/dateFormatter';
 import React, {useCallback, useEffect, useState} from 'react';
@@ -21,7 +24,7 @@ import {
 
 type Props = StackScreenProps<MainStackParamsList, 'PlanEditScreen', 'Stack'>;
 export const neededInfo = [
-  {id: 'country', name: '나라', type: 'select', options: commonCountries},
+  {id: 'country', name: '나라', type: 'select'},
   {id: 'city', name: '도시', type: 'select'},
   {id: 'date', name: '시작일', type: 'date'},
   {id: 'cash', name: '경비', type: 'money'},
@@ -79,7 +82,7 @@ const PlanEditScreen = ({route, navigation}: Props) => {
 
   return (
     <View style={StyleSheet.absoluteFill}>
-      <PlansClose />
+      <PlansClose color={WHITE} />
       <PlansSave />
       <PlansEditImage
         image={image}
@@ -107,4 +110,4 @@ const PlanEditScreen = ({route, navigation}: Props) => {
   );
 };
 
-export default PlanEditScreen;
+export default React.memo(PlanEditScreen);

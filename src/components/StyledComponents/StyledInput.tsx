@@ -1,15 +1,17 @@
 import DateIcon from '@src/assets/icons/icon-date.svg';
 import {BLACK_PRESSED, DARK_GREY} from '@src/styles/globalStyleVariables';
 import globalStyles from '@src/styles/style';
+import {commonCountries, countryCities} from '@src/utils/\bselectService';
 import {dateFormatter} from '@src/utils/dateFormatter';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import {
   NativeSyntheticEvent,
   Platform,
   Text,
   TextInputChangeEventData,
+  View,
 } from 'react-native';
-import DropDownPicker, {ItemType} from 'react-native-dropdown-picker';
+import {Dropdown} from 'react-native-element-dropdown';
 import {DatePickerModal} from 'react-native-paper-dates';
 import {CalendarDate} from 'react-native-paper-dates/lib/typescript/Date/Calendar';
 import styled from 'styled-components/native';
@@ -161,20 +163,51 @@ export const StyledMoneyInput = () => {
   );
 };
 
-export const StyledSelectInput = ({
-  options,
-}: {
-  options: ItemType<string>[] | undefined;
-}) => {
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(null);
+export const StyledSelectInput = React.memo(
+  ({id, country}: {id: string; country: string | undefined}) => {
+    const [open, setOpen] = useState(false);
+    const [value, setValue] = useState(null);
+    const options = useMemo(() => {
+      switch (id) {
+        case 'country':
+          return commonCountries;
+        case 'city':
+          return country
+            ? countryCities[country as keyof typeof countryCities]
+            : [];
+        case 'airport':
+          return country
+            ? countryCities[country as keyof typeof countryCities]
+            : [];
+        default:
+          return [];
+      }
+    }, [country, id]);
+    const placeholder = useMemo(() => {
+      switch (id) {
+        case 'country':
+          return '나라';
+        case 'city':
+          return '도시';
+        case 'airport':
+          return '공항';
+        default:
+          return '';
+      }
+    }, [id]);
 
-  if (!options) {
-    return <StyledInputView />;
-  }
-  return (
-    <StyledInputView style={{borderColor: 'transparent', zIndex: 1000}}>
-      <DropDownPicker
+    const renderItem = (item: {label: string; value: string}) => {
+      return (
+        <View
+          style={{height: 40, justifyContent: 'center', paddingHorizontal: 10}}>
+          <Text style={globalStyles.body1}>{item.label}</Text>
+        </View>
+      );
+    };
+
+    return (
+      <StyledInputView style={{}}>
+        {/* <DropDownPicker
         open={open}
         setOpen={setOpen}
         items={options}
@@ -182,8 +215,33 @@ export const StyledSelectInput = ({
         setValue={setValue}
         listMode="SCROLLVIEW"
         placeholder="나라"
-        style={{height: 40}}
-      />
-    </StyledInputView>
-  );
-};
+        style={{flex: 1, minHeight: 40}}
+        // dropDownContainerStyle={{height: 40}}
+        searchable={true}
+        searchContainerStyle={{
+          minWidth: '100%',
+        }}
+      /> */}
+        <Dropdown
+          style={{flex: 1, paddingHorizontal: 10, height: 40}}
+          placeholderStyle={globalStyles.body1}
+          selectedTextStyle={globalStyles.body1}
+          inputSearchStyle={[
+            globalStyles.body1,
+            {height: 40, justifyContent: 'center', paddingHorizontal: 10},
+          ]}
+          data={options}
+          search
+          labelField="label"
+          valueField="value"
+          placeholder={placeholder}
+          onChange={() => {}}
+          // onChange={item => {
+          //   setValue(item.value);
+          // }}
+          renderItem={renderItem}
+        />
+      </StyledInputView>
+    );
+  },
+);
