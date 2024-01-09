@@ -11,6 +11,8 @@ import {
   Dimensions,
 } from 'react-native';
 
+import {PersonalPlansResponseType} from '../../../types';
+
 const windowWidth = Dimensions.get('window').width;
 const cardWidth = windowWidth / 2 - 25;
 const profileImage = require('../../assets/image/airplane.png');
@@ -67,15 +69,24 @@ const styles = StyleSheet.create({
   },
 });
 
-const PlanCardType3 = ({backgroundImage, country, likes, forks}) => {
+const PlanCardType3 = ({plan}: {plan: PersonalPlansResponseType}) => {
+  if (!plan) return null;
+
   const iconSize = 24;
+  // Function to sum up numbers in an array
+  const sum = (numbers: number[]) =>
+    numbers.reduce((acc, current) => acc + current, 0);
+
+  // Calculate the sums for likes and forks
+  const totalLikes = sum(plan.likes);
+  const totalForks = sum(plan.forks);
 
   return (
     <ImageBackground source={backgroundImage} style={styles.card}>
       <View style={styles.darkFilter} />
       <View style={styles.columnWiseContainer}>
         <View style={styles.rowWiseContainer}>
-          <Text style={styles.countryText}>{`${country}`}</Text>
+          <Text style={styles.countryText}>{plan.country}</Text>
           <ViewIcon width={iconSize} height={iconSize} />
         </View>
         <View style={styles.rowWiseContainer}>
@@ -85,7 +96,7 @@ const PlanCardType3 = ({backgroundImage, country, likes, forks}) => {
               height={iconSize}
               style={{color: '#ffffff'}}
             />
-            <Text style={styles.interactionText}>{`${likes}`}</Text>
+            <Text style={styles.interactionText}>{totalLikes.toString()}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.interactionText}>
             <ForkIcon
@@ -93,7 +104,7 @@ const PlanCardType3 = ({backgroundImage, country, likes, forks}) => {
               height={iconSize}
               style={{color: '#ffffff'}}
             />
-            <Text style={styles.interactionText}>{`${forks}`}</Text>
+            <Text style={styles.interactionText}>{totalForks.toString()}</Text>
           </TouchableOpacity>
         </View>
       </View>
