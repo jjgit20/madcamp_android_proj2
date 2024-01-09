@@ -7,6 +7,7 @@ const UserScreen = () => {
     const getUserPlans = async () => {
       const userResponse = await axiosInstance.get(`/users/1`);
       const userPlanResponse = await axiosInstance.get(`/users/1/plans`);
+
       console.log('UserScreen', userResponse.data);
       console.log('UserScreen', userPlanResponse.data);
     };

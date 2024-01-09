@@ -15,12 +15,32 @@ import globalStyles from '@src/styles/style';
 import React from 'react';
 import {Text} from 'react-native';
 
-import {MainStackParamsList} from '../../../../types';
+import PlansPlace from './PlansPlace';
+import {MainStackParamsList, PlanPlace} from '../../../../types';
 
-export const PlansEditDays = ({day}: {day: number}) => {
+export const PlansEditDays = ({
+  day,
+  date,
+  planId,
+  places,
+  setPlan,
+  openModal,
+}: {
+  day: number;
+  date: number;
+  planId: number;
+  places: PlanPlace[];
+  setPlan: () => void;
+  openModal: (id: number) => void;
+}) => {
   const navigation = useNavigation<StackNavigationProp<MainStackParamsList>>();
   const handleNewPlace = () => {
-    navigation.navigate('SearchPlaceScreen');
+    navigation.navigate('SearchPlaceScreen', {
+      planId,
+      orderInDay: places.length + 1,
+      visitDate: date,
+    });
+    setPlan();
   };
   return (
     <React.Fragment>
@@ -31,6 +51,16 @@ export const PlansEditDays = ({day}: {day: number}) => {
         ]}>
         {day}일차
       </Text>
+      {places.map((place, index) => (
+        <PlansPlace
+          key={index}
+          name={place.place.name}
+          type={place.place.placeType}
+          cash={place.money}
+          planPlaceId={place.planPlaceId}
+          openModal={openModal}
+        />
+      ))}
       <StyledPressableView>
         <StyledPressable
           onPress={handleNewPlace}
