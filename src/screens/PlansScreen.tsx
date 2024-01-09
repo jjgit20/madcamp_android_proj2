@@ -76,7 +76,11 @@ const PlansScreen = () => {
 
   return (
     <React.Fragment>
-      <StyledScrollView contentContainerStyle={{gap: 15}}>
+      <StyledScrollView
+        contentContainerStyle={{
+          gap: 15,
+          paddingBottom: HEADING_VERTICAL_MARGIN,
+        }}>
         {currentPlans && currentPlans.length > 0 && (
           <Text
             style={[

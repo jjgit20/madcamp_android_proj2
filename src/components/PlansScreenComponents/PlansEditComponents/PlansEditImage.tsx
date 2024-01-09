@@ -80,9 +80,9 @@ export const PlansEditImage = React.memo(
           )}
           {plan?.startDate && plan?.endDate && (
             <Text style={[globalStyles.h6, {color: WHITE}]}>
-              {plan?.startDate && dateFormatter(plan.startDate)}
+              {plan?.startDate && dateFormatter(plan.startDate as string)}
               {` ~ `}
-              {plan?.endDate && dateFormatter(plan.endDate)}
+              {plan?.endDate && dateFormatter(plan.endDate as string)}
             </Text>
           )}
 
