@@ -1,9 +1,8 @@
 import DateIcon from '@src/assets/icons/icon-date.svg';
 import {BLACK_PRESSED, DARK_GREY} from '@src/styles/globalStyleVariables';
 import globalStyles from '@src/styles/style';
-import {commonCountries, countryCities} from '@src/utils/\bselectService';
 import {dateFormatter} from '@src/utils/dateFormatter';
-import React, {useCallback, useMemo, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
   NativeSyntheticEvent,
   Platform,
@@ -164,37 +163,18 @@ export const StyledMoneyInput = () => {
 };
 
 export const StyledSelectInput = React.memo(
-  ({id, country}: {id: string; country: string | undefined}) => {
+  ({
+    name,
+    options,
+  }: {
+    name: string;
+    options?: {
+      label: string;
+      value: string;
+    }[];
+  }) => {
     const [open, setOpen] = useState(false);
     const [value, setValue] = useState(null);
-    const options = useMemo(() => {
-      switch (id) {
-        case 'country':
-          return commonCountries;
-        case 'city':
-          return country
-            ? countryCities[country as keyof typeof countryCities]
-            : [];
-        case 'airport':
-          return country
-            ? countryCities[country as keyof typeof countryCities]
-            : [];
-        default:
-          return [];
-      }
-    }, [country, id]);
-    const placeholder = useMemo(() => {
-      switch (id) {
-        case 'country':
-          return '나라';
-        case 'city':
-          return '도시';
-        case 'airport':
-          return '공항';
-        default:
-          return '';
-      }
-    }, [id]);
 
     const renderItem = (item: {label: string; value: string}) => {
       return (
@@ -230,11 +210,11 @@ export const StyledSelectInput = React.memo(
             globalStyles.body1,
             {height: 40, justifyContent: 'center', paddingHorizontal: 10},
           ]}
-          data={options}
+          data={options ? options : []}
           search
           labelField="label"
           valueField="value"
-          placeholder={placeholder}
+          placeholder={name}
           onChange={() => {}}
           // onChange={item => {
           //   setValue(item.value);

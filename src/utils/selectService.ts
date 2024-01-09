@@ -126,3 +126,10 @@ export const countryAirports = {
     // Add more airports in South Korea as needed
   ],
 };
+
+export const seasons = [
+  {label: '봄', value: '봄'},
+  {label: '여름', value: '여름'},
+  {label: '가을', value: '가을'},
+  {label: '겨울', value: '겨울'},
+];

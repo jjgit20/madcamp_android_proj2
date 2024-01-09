@@ -23,17 +23,6 @@ import {
 } from '../../types';
 
 type Props = StackScreenProps<MainStackParamsList, 'PlanEditScreen', 'Stack'>;
-export const neededInfo = [
-  {id: 'country', name: '나라', type: 'select'},
-  {id: 'city', name: '도시', type: 'select'},
-  {id: 'date', name: '시작일', type: 'date'},
-  {id: 'cash', name: '경비', type: 'money'},
-];
-export const extraInfo = [
-  {id: 'airport', name: '공항', type: 'select'},
-  {id: 'season', name: '계절', type: 'select'},
-  {id: 'topic', name: '주제', type: 'string'},
-];
 
 const PlanEditScreen = ({route, navigation}: Props) => {
   const [plan, setPlan] = useState<PersonalPlansDetailedResponseType | null>(
