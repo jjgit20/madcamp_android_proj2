@@ -1,6 +1,7 @@
 import FavoritIcon from '@src/assets/icons/Favorite_fill.svg';
 import ForkIcon from '@src/assets/icons/fork_icon.svg';
 import StarIcon from '@src/assets/icons/Star_fill.svg';
+import {differenceInDays, parseISO} from 'date-fns';
 import React from 'react';
 import {
   View,
@@ -105,21 +106,46 @@ const styles = StyleSheet.create({
   },
 });
 
-const PlanCardType1 = () => {
+const PlanCardType1 = ({plan}: {plan: any}) => {
+  if (!plan) return null;
   const iconSize = 24;
 
+  // Function to sum up numbers in an array
+  const sum = (numbers: number[]) =>
+    numbers.reduce((acc, current) => acc + current, 0);
+
+  // Calculate the sums for likes and forks
+  const totalLikes = sum(plan.likes);
+  const totalForks = sum(plan.forks);
+
+  const getDurationInDays = (start?: string, end?: string) => {
+    if (!start || !end) {
+      // If either start or end date is missing, return 0
+      return 0;
+    }
+    const startDate = parseISO(start);
+    const endDate = parseISO(end);
+    return differenceInDays(endDate, startDate);
+  };
+
+  // Use the function to calculate the duration
+  const durationDays = getDurationInDays(plan.startDate, plan.endDate);
+  const formattedDuration = `${durationDays}박${durationDays + 1}일`;
+
   return (
-    <ImageBackground source={backgroundImage} style={styles.card}>
+    <ImageBackground source={{uri: plan.image}} style={styles.card}>
       <View style={styles.subcard}>
         <View style={styles.textContainer}>
           <View style={styles.countryAndRankContainer}>
-            <Text style={styles.countryAndRatingText}>일본1</Text>
+            <Text style={styles.countryAndRatingText}>{plan.country}</Text>
             <StarIcon width={iconSize} height={iconSize} />
-            <Text style={styles.countryAndRatingText}>4.5</Text>
+            <Text style={styles.countryAndRatingText}>{plan.rating}</Text>
           </View>
-          <Text style={styles.cityAndDateContainer}>도쿄 - 3박4일</Text>
+          <Text style={styles.cityAndDateContainer}>
+            {plan.city} - {formattedDuration}
+          </Text>
         </View>
-        <Image source={profileImage} style={styles.profileImage} />
+        <Image source={{uri: plan.userId.image}} style={styles.profileImage} />
       </View>
 
       <View style={styles.interactionContainer}>
@@ -129,7 +155,7 @@ const PlanCardType1 = () => {
             height={iconSize}
             style={{color: '#0989FF'}}
           />
-          <Text style={styles.interactionText}>637</Text>
+          <Text style={styles.interactionText}>{totalLikes}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.interactionText}>
           <ForkIcon
@@ -137,9 +163,9 @@ const PlanCardType1 = () => {
             height={iconSize}
             style={{color: '#0989FF'}}
           />
-          <Text style={styles.interactionText}>2,853</Text>
+          <Text style={styles.interactionText}>{totalForks}</Text>
         </TouchableOpacity>
-        <Text style={styles.price}>160 만원</Text>
+        <Text style={styles.price}>{plan.cash}</Text>
       </View>
     </ImageBackground>
   );

@@ -2,7 +2,6 @@ import FavoritIcon from '@src/assets/icons/Favorite_fill.svg';
 import ForkIcon from '@src/assets/icons/fork_icon.svg';
 import ViewIcon from '@src/assets/icons/View.svg';
 import ViewHideIcon from '@src/assets/icons/View_hide.svg';
-
 import React from 'react';
 import {
   View,
@@ -17,8 +16,6 @@ import {PersonalPlansResponseType} from '../../../types';
 
 const windowWidth = Dimensions.get('window').width;
 const cardWidth = windowWidth / 2 - 25;
-const profileImage = require('../../assets/image/airplane.png');
-const backgroundImage = require('../../assets/image/tokyo.png');
 
 const styles = StyleSheet.create({
   card: {
@@ -37,7 +34,7 @@ const styles = StyleSheet.create({
   },
   darkFilter: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // This creates the semi-transparent overlay
+    backgroundColor: 'rgba(0, 0, 0, 0.3)', // This creates the semi-transparent overlay
   },
   rowWiseContainer: {
     flexDirection: 'row',
@@ -83,13 +80,19 @@ const PlanCardType3 = ({plan}: {plan: PersonalPlansResponseType}) => {
   const totalLikes = sum(plan.likes);
   const totalForks = sum(plan.forks);
 
+  const VisibilityIcon = plan.isPublic ? ViewIcon : ViewHideIcon;
+
   return (
-    <ImageBackground source={backgroundImage} style={styles.card}>
+    <ImageBackground source={{uri: plan.image}} style={styles.card}>
       <View style={styles.darkFilter} />
       <View style={styles.columnWiseContainer}>
         <View style={styles.rowWiseContainer}>
           <Text style={styles.countryText}>{plan.country}</Text>
-          <ViewIcon width={iconSize} height={iconSize} />
+          <VisibilityIcon
+            width={iconSize}
+            height={iconSize}
+            style={{color: '#ffffff'}}
+          />
         </View>
         <View style={styles.rowWiseContainer}>
           <TouchableOpacity style={styles.interactionText}>

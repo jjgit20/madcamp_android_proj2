@@ -4,10 +4,6 @@ import SendIcon from '@src/assets/icons/Send_fill.svg';
 import React from 'react';
 import {View, Text, StyleSheet, Image} from 'react-native';
 
-const profileImage = require('@src/assets/image/airplane.png');
-
-// Import your icons from wherever they are located
-
 const styles = StyleSheet.create({
   profileContainer: {
     width: '100%',
