@@ -39,6 +39,19 @@ export const StyledInputView = styled.View`
   align-items: center;
 `;
 
+export const StyledInputViewSignUp = styled.View`
+  flex: 1;
+  border-bottom-color: ${DARK_GREY};
+  border-bottom-width: 1px;
+  padding: 0;
+  margin: 0 20px;
+  height: 40px;
+  font-family: Pretendard-Regular;
+  font-size: 16px;
+  flex-direction: row;
+  align-items: center;
+`;
+
 const CustomDatePickerModal = React.memo(
   ({
     modalOpen,

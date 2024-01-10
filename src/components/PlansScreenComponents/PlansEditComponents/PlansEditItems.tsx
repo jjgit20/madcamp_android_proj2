@@ -54,7 +54,7 @@ const PlansEditItems = ({
                 ? countryCities[plan?.country as keyof typeof countryCities]
                 : [],
             },
-            {id: 'date', name: '시작일', type: 'date'},
+            {id: 'date', name: '날짜', type: 'date'},
             {id: 'cash', name: '경비', type: 'money'},
           ]
         : [
