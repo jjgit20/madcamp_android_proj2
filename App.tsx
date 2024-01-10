@@ -84,7 +84,7 @@ function App(): React.JSX.Element {
 
   const retrieveUserSession = async () => {
     try {
-      await EncryptedStorage.setItem('user_session', null);
+      // await EncryptedStorage.setItem('user_session', null);
       const userSession = await EncryptedStorage.getItem('user_session');
       dispatch({
         type: 'LOAD_TOKEN',

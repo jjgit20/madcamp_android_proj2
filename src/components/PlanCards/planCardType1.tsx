@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     right: 20, // 우측 정렬
     top: 20,
     // marginHorizontal: 20, // 양쪽으로 20px 마진 적용
-    backgroundColor: 'rgba(255, 255, 255, 0.70)',
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
     borderRadius: 20,
     // React Native doesn't support backdrop-filter, use an overlay Image or blur effect instead
   },
@@ -128,38 +128,41 @@ export const getFormattedDurationInDays = (start?: string, end?: string) => {
   return `${difference}박 ${difference + 1}일`;
 };
 
-const PlanCardType1 = ({plan}: {plan: PersonalPlansResponseType}) => {
+const PlanCardType1 = ({
+  plan,
+  modifyPlanLike,
+}: {
+  plan: PersonalPlansResponseType;
+  modifyPlanLike: (planId: number) => void;
+}) => {
   const navigation = useNavigation<StackNavigationProp<MainStackParamsList>>();
-  const handlePressLike = () => {
-    const getUserPlans = async () => {
-      try {
-        const likeResponse = await axiosInstance.patch(
-          `/plans/${plan.planId}/like`,
-        );
-        console.log(likeResponse.data);
-      } catch (error) {
-        console.log('Error liking: ', error);
-      }
-    };
-    getUserPlans();
+  const handlePressLike = async () => {
+    try {
+      const likeResponse = await axiosInstance.patch(
+        `/plans/${plan.planId}/like`,
+      );
+      modifyPlanLike(plan.planId);
+    } catch (error) {
+      console.log('Error liking: ', error);
+    }
   };
 
-  const handlePressFork = () => {
-    const getUserPlans = async () => {
-      try {
-        const forkResponse = await axiosInstance.post(
-          `/plans/${plan.planId}/fork`,
-        );
-        console.log(forkResponse.data);
-      } catch (error) {
-        console.log('Error liking: ', error);
-      }
-    };
-    getUserPlans();
+  const handlePressFork = async () => {
+    try {
+      const forkResponse = await axiosInstance.post(
+        `/plans/${plan.planId}/fork`,
+      );
+      console.log('forkResponse', forkResponse.data);
+      navigation.navigate('PlanEditScreen', {
+        planId: forkResponse.data.planId,
+      });
+    } catch (error) {
+      console.log('Error liking: ', error);
+    }
   };
 
   if (!plan) return null;
-  const iconSize = 24;
+  const iconSize = 20;
 
   const totalLikes = plan?.likes?.length;
   const totalForks = plan?.forks?.length;
@@ -215,13 +218,22 @@ const PlanCardType1 = ({plan}: {plan: PersonalPlansResponseType}) => {
           <View style={styles.interactionContainer}>
             <TouchableOpacity
               onPress={handlePressLike}
-              style={styles.interactionTextContainer}>
+              style={[
+                styles.interactionTextContainer,
+                {backgroundColor: plan.didILikeIt ? BLUE : WHITE},
+              ]}>
               <FavoritIcon
                 width={iconSize}
                 height={iconSize}
-                style={{color: '#0989FF'}}
+                style={{color: plan.didILikeIt ? WHITE : BLUE}}
               />
-              <Text style={styles.interactionText}>{totalLikes}</Text>
+              <Text
+                style={[
+                  styles.interactionText,
+                  {color: plan.didILikeIt ? WHITE : BLUE},
+                ]}>
+                {totalLikes}
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={handlePressFork}

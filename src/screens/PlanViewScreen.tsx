@@ -114,6 +114,48 @@ const PlanViewScreen = ({route, navigation}: Props) => {
     });
   }, []);
 
+  const handlePressLike = async () => {
+    if (!plan) {
+      return;
+    }
+    try {
+      const likeResponse = await axiosInstance.patch(
+        `/plans/${plan.planId}/like`,
+      );
+      setPlan(prevState => {
+        if (prevState == null) {
+          return null;
+        }
+        return {
+          ...prevState,
+          likes: plan.didILikeIt
+            ? plan.likes.slice(0, -1) // Remove the last element
+            : [...plan.likes, 'tmp'],
+          didILikeIt: !prevState.didILikeIt,
+        };
+      });
+    } catch (error) {
+      console.log('Error liking: ', error);
+    }
+  };
+
+  const handlePressFork = async () => {
+    if (!plan) {
+      return;
+    }
+    try {
+      const forkResponse = await axiosInstance.post(
+        `/plans/${plan.planId}/fork`,
+      );
+      console.log('forkResponse', forkResponse.data);
+      navigation.navigate('PlanEditScreen', {
+        planId: forkResponse.data.planId,
+      });
+    } catch (error) {
+      console.log('Error liking: ', error);
+    }
+  };
+
   return (
     <React.Fragment>
       <PlansModal
@@ -146,7 +188,12 @@ const PlanViewScreen = ({route, navigation}: Props) => {
             }
           />
         )}
-        <PlansViewImage image={image} plan={plan} />
+        <PlansViewImage
+          image={image}
+          plan={plan}
+          handlePressLike={handlePressLike}
+          handlePressFork={handlePressFork}
+        />
         <StyledScrollView
           contentContainerStyle={{gap: 15, paddingVertical: 20}}>
           <Text style={[globalStyles.h4, {color: BLACK}]}>여행 필수 정보</Text>

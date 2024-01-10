@@ -13,6 +13,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'space-around', // Adjust as needed for your layout
     marginBottom: 20,
+    paddingHorizontal: 20,
   },
   profileAndstatitemContainer: {
     flexDirection: 'row',
@@ -61,7 +62,14 @@ const profileBar = ({user}: {user: any}) => {
     <View style={styles.profileContainer}>
       <Text style={[globalStyles.h4, {color: BLACK}]}>@{user.nickname}</Text>
       <View style={styles.profileAndstatitemContainer}>
-        <Image source={{uri: user.image}} style={styles.profileImage} />
+        <Image
+          source={{
+            uri: user.image
+              ? user.image
+              : 'https://i.pinimg.com/564x/85/b0/02/85b00271cb3cfaa900f7d5165ee6a80d.jpg',
+          }}
+          style={styles.profileImage}
+        />
 
         <View style={styles.statsContainer}>
           <View style={styles.statHorizontalItem}>

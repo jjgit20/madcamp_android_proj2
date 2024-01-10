@@ -42,6 +42,7 @@ export interface PersonalPlansResponseType {
   cash: number;
   rating: number;
   userId?: {userId: number; image: string};
+  didILikeIt?: boolean;
 }
 
 export interface PersonalPlansDetailedResponseType {
@@ -61,6 +62,7 @@ export interface PersonalPlansDetailedResponseType {
   userId?: {userId: number};
   selfReview?: string;
   rating?: number;
+  didILikeIt?: boolean;
 }
 
 export interface PlanPlace {

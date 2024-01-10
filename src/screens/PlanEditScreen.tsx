@@ -61,6 +61,7 @@ const initPlan: PersonalPlansDetailedResponseType = {
   cash: 0,
   places: [],
   isNull: true,
+  rating: 5,
 };
 
 const PlanEditScreen = ({route, navigation}: Props) => {
@@ -172,6 +173,8 @@ const PlanEditScreen = ({route, navigation}: Props) => {
           }
         });
         let newPlanId = route.params.planId;
+        console.log(route.params.planId, formData, 'CHECK');
+
         if (route.params.planId === 0) {
           const newPlanResponse = await axiosInstance.post(`/plans`, formData, {
             headers,
@@ -300,13 +303,13 @@ const PlanEditScreen = ({route, navigation}: Props) => {
             <StyledInputView
               style={{
                 height: 100,
-                alignItems: 'flex-start',
                 overflow: 'hidden',
+                paddingVertical: 10,
               }}>
               <StyledTextInput
                 multiline={true}
                 style={{
-                  height: '100%',
+                  height: '80%',
                   marginHorizontal: 10,
                   textAlignVertical: 'top',
                 }}
