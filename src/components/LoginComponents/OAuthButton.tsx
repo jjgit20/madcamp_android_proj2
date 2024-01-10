@@ -45,7 +45,7 @@ const OAuthButton = () => {
         );
         login(loginResponse.data.token);
       } else {
-        console.log(kakaoProfileResponse);
+        // console.log(kakaoProfileResponse);
         navigation.navigate('SignUpScreen', {
           kakaoId: kakaoProfileResponse.id,
           email: kakaoProfileResponse.email,
@@ -53,7 +53,7 @@ const OAuthButton = () => {
           image: kakaoProfileResponse.profileImageUrl,
         });
       }
-      console.log(loginResponse.data);
+      // console.log(loginResponse.data);
     } catch (error) {
       console.log(
         'login error: ',

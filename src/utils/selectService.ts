@@ -11,7 +11,7 @@ export const commonCountries = [
 
 export const countryCodes = {
   라오스: 'la',
-  대만: 'cn',
+  대만: 'tw',
   필리핀: 'ph',
   미국: 'us',
   태국: 'th',

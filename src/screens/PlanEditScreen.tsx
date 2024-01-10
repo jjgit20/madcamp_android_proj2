@@ -30,8 +30,9 @@ import {
 import globalStyles from '@src/styles/style';
 import axiosInstance from '@src/utils/axiosService';
 import {dateDifference} from '@src/utils/dateFormatter';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
+  BackHandler,
   NativeSyntheticEvent,
   StyleSheet,
   Text,
@@ -173,7 +174,7 @@ const PlanEditScreen = ({route, navigation}: Props) => {
           }
         });
         let newPlanId = route.params.planId;
-        console.log(route.params.planId, formData, 'CHECK');
+        // console.log(route.params.planId, formData, 'CHECK');
 
         if (route.params.planId === 0) {
           const newPlanResponse = await axiosInstance.post(`/plans`, formData, {
@@ -188,18 +189,39 @@ const PlanEditScreen = ({route, navigation}: Props) => {
             .patch(`/plans/${route.params.planId}`, formData, {
               headers,
             })
-            .then(res => console.log(res))
-            .catch(err => console.log(err)); // not error...idk why this is flagging
+            .then(res => console.log(res.data))
+            .catch(err => console.error(err)); // not error...idk why this is flagging
         }
 
         if (redirect) {
-          navigation.navigate('PlanViewScreen', {planId: newPlanId});
+          navigation.navigate('PlanViewScreen', {
+            planId: newPlanId,
+            reload: Math.random(),
+          });
         }
       }
     } catch (error) {
       console.error('Error:', JSON.stringify(error));
     }
   };
+
+  useEffect(() => {
+    const backAction = () => {
+      if (route.params.planId !== 0) {
+        navigation.navigate('PlanViewScreen', {planId: route.params.planId});
+      } else {
+        navigation.navigate('MainTabs', {screen: 'PlansScreen'});
+      }
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, [navigation, route.params.planId]);
 
   return (
     <React.Fragment>
@@ -239,7 +261,12 @@ const PlanEditScreen = ({route, navigation}: Props) => {
         />
       )}
       <View style={[StyleSheet.absoluteFill, {zIndex: -1}]}>
-        <PlansClose color={WHITE} />
+        <PlansClose
+          color={WHITE}
+          customBack={() =>
+            navigation.navigate('PlanViewScreen', {planId: route.params.planId})
+          }
+        />
         <PlansSave savePlan={() => savePlan(true)} />
         <PlansEditImage
           image={image}

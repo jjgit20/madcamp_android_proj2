@@ -3,7 +3,7 @@ import {NavigatorScreenParams} from '@react-navigation/native';
 export type MainStackParamsList = {
   MainTabs: NavigatorScreenParams<MainTabsParamsList>;
   PlanEditScreen: {planId: number};
-  PlanViewScreen: {planId: number};
+  PlanViewScreen: {planId: number; reload?: number};
   LoginScreen: undefined;
   SignUpScreen: {
     kakaoId: string;

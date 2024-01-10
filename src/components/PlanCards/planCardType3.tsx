@@ -127,7 +127,7 @@ const PlanCardType3 = ({
       const forkResponse = await axiosInstance.post(
         `/plans/${plan.planId}/fork`,
       );
-      console.log('forkResponse', forkResponse.data);
+      // console.log('forkResponse', forkResponse.data);
       navigation.navigate('PlanEditScreen', {
         planId: forkResponse.data.planId,
       });

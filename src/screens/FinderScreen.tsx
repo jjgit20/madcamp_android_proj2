@@ -61,9 +61,24 @@ const FinderScreen = ({route, navigation}: Props) => {
     );
   }, []);
 
+  const [searchValue, setSearchValue] = useState('');
+  const search = useCallback(() => {
+    const getUserPlans = async () => {
+      const allUserPlanResponse = await axiosInstance.get(
+        `/plans?search=${searchValue}`,
+      );
+      setPlans(allUserPlanResponse.data);
+    };
+    getUserPlans();
+  }, [searchValue]);
+
   return (
     <View style={styles.container}>
-      <SearchTab />
+      <SearchTab
+        searchValue={searchValue}
+        setSearchValue={(value: string) => setSearchValue(value)}
+        search={search}
+      />
       <FlatList
         data={plans}
         renderItem={({item}) => renderItem({item, modifyPlanLike})}

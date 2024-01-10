@@ -6,6 +6,7 @@ import ForkIcon from '@src/assets/icons/fork_icon.svg';
 import StarIcon from '@src/assets/icons/Star_fill.svg';
 import {
   BLACK,
+  BLACK_PRESSED,
   BLUE,
   DARK_GREY,
   WHITE,
@@ -96,9 +97,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: WHITE,
-    borderRadius: 12,
+    borderRadius: 20,
     flex: 1,
     gap: 10,
+    paddingVertical: 4,
   },
   interactionText: {
     ...globalStyles.h6,
@@ -160,7 +162,7 @@ const PlanCardType1 = ({
       const forkResponse = await axiosInstance.post(
         `/plans/${plan.planId}/fork`,
       );
-      console.log('forkResponse', forkResponse.data);
+      // console.log('forkResponse', forkResponse.data);
       navigation.navigate('PlanEditScreen', {
         planId: forkResponse.data.planId,
       });
@@ -212,63 +214,69 @@ const PlanCardType1 = ({
             width: '100%',
             height: 380,
           }}>
-          <View style={styles.subcard}>
-            <View style={styles.textContainer}>
-              <View style={styles.countryAndRankContainer}>
-                <Text style={[styles.countryAndRatingText]}>
-                  {plan.country}
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: BLACK_PRESSED,
+              padding: 20,
+            }}>
+            <View style={styles.subcard}>
+              <View style={styles.textContainer}>
+                <View style={styles.countryAndRankContainer}>
+                  <Text style={[styles.countryAndRatingText]}>
+                    {plan.country}
+                  </Text>
+                  <StarIcon width={iconSize} height={iconSize} />
+                  <Text style={styles.countryAndRatingText}>{plan.rating}</Text>
+                </View>
+                <Text style={styles.cityAndDateContainer}>
+                  {plan.city} - {formattedDuration}
                 </Text>
-                <StarIcon width={iconSize} height={iconSize} />
-                <Text style={styles.countryAndRatingText}>{plan.rating}</Text>
               </View>
-              <Text style={styles.cityAndDateContainer}>
-                {plan.city} - {formattedDuration}
-              </Text>
+              <TouchableOpacity onPress={handleUserCard}>
+                <Image
+                  source={{
+                    uri:
+                      plan.userId?.image ||
+                      'https://i.pinimg.com/564x/85/b0/02/85b00271cb3cfaa900f7d5165ee6a80d.jpg',
+                  }}
+                  style={styles.profileImage}
+                />
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity onPress={handleUserCard}>
-              <Image
-                source={{
-                  uri:
-                    plan.userId?.image ||
-                    'https://i.pinimg.com/564x/85/b0/02/85b00271cb3cfaa900f7d5165ee6a80d.jpg',
-                }}
-                style={styles.profileImage}
-              />
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.interactionContainer}>
-            <TouchableOpacity
-              onPress={handlePressLike}
-              style={[
-                styles.interactionTextContainer,
-                {backgroundColor: plan.didILikeIt ? BLUE : WHITE},
-              ]}>
-              <FavoritIcon
-                width={iconSize}
-                height={iconSize}
-                style={{color: plan.didILikeIt ? WHITE : BLUE}}
-              />
-              <Text
+            <View style={styles.interactionContainer}>
+              <TouchableOpacity
+                onPress={handlePressLike}
                 style={[
-                  styles.interactionText,
-                  {color: plan.didILikeIt ? WHITE : BLUE},
+                  styles.interactionTextContainer,
+                  {backgroundColor: plan.didILikeIt ? BLUE : WHITE},
                 ]}>
-                {totalLikes}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={handlePressFork}
-              style={styles.interactionTextContainer}>
-              <ForkIcon
-                width={iconSize}
-                height={iconSize}
-                style={{color: '#0989FF'}}
-              />
-              <Text style={styles.interactionText}>{totalForks}</Text>
-            </TouchableOpacity>
-            <View style={styles.priceContainer}>
-              <Text style={styles.price}>{cash}만원</Text>
+                <FavoritIcon
+                  width={iconSize}
+                  height={iconSize}
+                  style={{color: plan.didILikeIt ? WHITE : BLUE}}
+                />
+                <Text
+                  style={[
+                    styles.interactionText,
+                    {color: plan.didILikeIt ? WHITE : BLUE},
+                  ]}>
+                  {totalLikes}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handlePressFork}
+                style={styles.interactionTextContainer}>
+                <ForkIcon
+                  width={iconSize}
+                  height={iconSize}
+                  style={{color: '#0989FF'}}
+                />
+                <Text style={styles.interactionText}>{totalForks}</Text>
+              </TouchableOpacity>
+              <View style={styles.priceContainer}>
+                <Text style={styles.price}>{cash}만원</Text>
+              </View>
             </View>
           </View>
         </ImageBackground>
