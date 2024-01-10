@@ -4,6 +4,8 @@ import SearchTab from '@src/components/searchBar';
 import axiosInstance from '@src/utils/axiosService';
 import React, {useCallback, useState} from 'react';
 import {StyleSheet, View, FlatList} from 'react-native';
+import {MainTabsParamsList} from '../../types';
+import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
 
 const styles = StyleSheet.create({
   container: {
@@ -22,7 +24,9 @@ const renderItem = ({item}: {item: any}) => {
   return <PlanCardType1 plan={item} />;
 };
 
-const FinderScreen = () => {
+type Props = BottomTabScreenProps<MainTabsParamsList, 'FinderScreen', 'Tab'>;
+
+const FinderScreen = ({route, navigation}: Props) => {
   const [plans, setPlans] = useState();
 
   useFocusEffect(
