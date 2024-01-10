@@ -40,7 +40,7 @@ export const PlansSaveFirst = React.memo(
           setShowSuccessMessage(false);
           savePlan();
           closeModal();
-        }, 2000);
+        }, 500);
       } catch (error) {
         console.log('Error handleSaveFirst: ', error);
       }
@@ -64,10 +64,10 @@ export const PlansSaveFirst = React.memo(
               gap: 15,
             }}>
             {showSuccessMessage ? (
-              <Text style={globalStyles.h4}>저장되었습니다!</Text>
+              <Text style={globalStyles.h5}>저장되었습니다!</Text>
             ) : (
               <React.Fragment>
-                <Text style={globalStyles.h4}>먼저 이 계획을 저장하세요!</Text>
+                <Text style={globalStyles.h5}>먼저 이 계획을 저장하세요!</Text>
                 <View style={{flexDirection: 'row', gap: 15}}>
                   <StyledPressableView style={{width: 'auto', flex: 1}}>
                     <StyledPressable

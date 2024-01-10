@@ -228,6 +228,7 @@ const PlanEditScreen = ({route, navigation}: Props) => {
             }
             modifyPlan('places', [...plan?.places, place]);
           }}
+          planCountry={plan?.country}
         />
       )}
       {isNewVisible && route.params.planId === 0 && (

@@ -13,6 +13,7 @@ import PlanEditScreen from '@src/screens/PlanEditScreen';
 import PlanViewScreen from '@src/screens/PlanViewScreen';
 import SignUpScreen from '@src/screens/SignUpScreen';
 import WelcomeScreen from '@src/screens/WelcomeScreen';
+import axiosInstance from '@src/utils/axiosService';
 import React, {
   PropsWithChildren,
   createContext,
@@ -86,11 +87,39 @@ function App(): React.JSX.Element {
     try {
       // await EncryptedStorage.setItem('user_session', null);
       const userSession = await EncryptedStorage.getItem('user_session');
-      dispatch({
-        type: 'LOAD_TOKEN',
-        token: userSession && JSON.parse(userSession).token,
-      });
-      console.log('LOAD_TOKEN', userSession && JSON.parse(userSession).token);
+      const today = new Date();
+      if (
+        userSession &&
+        parseInt(JSON.parse(userSession).expiration) < today.getTime()
+      ) {
+        const refreshResponse = await axiosInstance.get(`/auth/kakao/refresh`);
+        const expiry = new Date();
+        expiry.setDate(expiry.getDate() + 1);
+
+        await EncryptedStorage.setItem(
+          'user_session',
+          JSON.stringify({
+            token: refreshResponse.data.token,
+            userId: refreshResponse.data.userId,
+            expiration: expiry.getTime(),
+          }),
+        );
+        dispatch({
+          type: 'LOAD_TOKEN',
+          token: refreshResponse.data.token,
+        });
+
+        console.log(
+          'REFRESH_TOKEN',
+          userSession && JSON.parse(userSession).token,
+        );
+      } else {
+        dispatch({
+          type: 'LOAD_TOKEN',
+          token: userSession && JSON.parse(userSession).token,
+        });
+        console.log('LOAD_TOKEN', userSession && JSON.parse(userSession).token);
+      }
     } catch (error) {
       console.error('token getting error: ', error);
     }

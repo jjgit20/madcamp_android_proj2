@@ -136,7 +136,7 @@ export const StyledDateInput = React.memo(
           <Text style={globalStyles.body1}>
             {' '}
             {startDate && dateFormatter(startDate)}
-            {` ~ `}
+            {`~`}
             {endDate && dateFormatter(endDate)}
           </Text>
           <StyledRoundPressableView style={{marginLeft: 'auto'}}>

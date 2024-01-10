@@ -9,16 +9,16 @@ export const commonCountries = [
   {label: '라오스', value: '라오스'},
 ];
 
-export const countryCodes = [
-  {label: '라오스', value: '라오스'},
-  {label: '대만', value: '대만'},
-  {label: '필리핀', value: '필리핀'},
-  {label: '미국', value: 'us'},
-  {label: '태국', value: 'th'},
-  {label: '베트남', value: 'vn'},
-  {label: '일본', value: 'jp'},
-  {label: '한국', value: 'kr'},
-];
+export const countryCodes = {
+  라오스: 'la',
+  대만: 'cn',
+  필리핀: 'ph',
+  미국: 'us',
+  태국: 'th',
+  베트남: 'vn',
+  일본: 'jp',
+  한국: 'kr',
+};
 
 export const countryCities = {
   라오스: [

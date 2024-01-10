@@ -81,6 +81,17 @@ const PlansScreen = () => {
           gap: 15,
           paddingBottom: HEADING_VERTICAL_MARGIN,
         }}>
+        {(!currentPlans || currentPlans.length === 0) &&
+          (!futurePlans || futurePlans.length === 0) &&
+          (!pastPlans || pastPlans.length === 0) && (
+            <Text
+              style={[
+                globalStyles.h1,
+                {color: BLUE, marginTop: HEADING_VERTICAL_MARGIN},
+              ]}>
+              시작해보세요!
+            </Text>
+          )}
         {currentPlans && currentPlans.length > 0 && (
           <Text
             style={[
