@@ -34,11 +34,14 @@ export interface PersonalPlansResponseType {
   endDate: string;
   country: string;
   city: string;
-  forks: any;
-  likes: any;
+  forks: any[];
+  likes: any[];
   image: string | null;
   isPublic: boolean;
   isComplete: boolean;
+  cash: number;
+  rating: number;
+  userId?: {userId: number; image: string};
 }
 
 export interface PersonalPlansDetailedResponseType {

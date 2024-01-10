@@ -8,7 +8,7 @@ import {
 import globalStyles from '@src/styles/style';
 import {dateFormatter} from '@src/utils/dateFormatter';
 import React, {useCallback, useMemo} from 'react';
-import {ImageBackground, StyleSheet, Text, View} from 'react-native';
+import {ImageBackground, Text, View} from 'react-native';
 
 import {MainStackParamsList, PersonalPlansResponseType} from '../../../types';
 import {getFormattedDurationInDays} from '../PlanCards/planCardType1';
@@ -16,13 +16,6 @@ import {
   StyledCardPressable,
   StyledCardPressableView,
 } from '../StyledComponents/StyledButton';
-
-const styles = StyleSheet.create({
-  shadowContainer: {
-    elevation: 3,
-    backgroundColor: 'rgba(0, 0, 0, 1)',
-  },
-});
 
 const days = ['일', '월', '화', '수', '목', '금', '토'];
 

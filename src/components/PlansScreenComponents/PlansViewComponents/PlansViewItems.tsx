@@ -5,6 +5,7 @@ import {
   countryCities,
   seasons,
 } from '@src/utils/\bselectService';
+import {dateFormatter} from '@src/utils/dateFormatter';
 import React, {useMemo} from 'react';
 import {Text, View} from 'react-native';
 
@@ -35,7 +36,7 @@ const PlansViewItems = ({
                 ? countryCities[plan?.country as keyof typeof countryCities]
                 : [],
             },
-            {id: 'date', name: '시작일', type: 'date'},
+            {id: 'date', name: '날짜', type: 'date'},
             {id: 'cash', name: '경비', type: 'money'},
           ]
         : [
@@ -86,10 +87,19 @@ const PlansViewItems = ({
                 {name}
               </Text>
               <Text style={[globalStyles.body1]}>
+                {id === 'date' &&
+                  `${dateFormatter(
+                    plan?.startDate as string,
+                  )} ~ ${dateFormatter(plan?.endDate as string)}`}
+                {id === 'money' && plan?.cash.toLocaleString('ko-KR')}
+                {id !== 'date' &&
+                  ((plan &&
+                    `${plan[id as keyof PersonalPlansDetailedResponseType]}` &&
+                    plan[id as keyof PersonalPlansDetailedResponseType] !==
+                      'null') ||
+                    `#${name}`)}
                 {(plan &&
-                  plan[id as keyof PersonalPlansDetailedResponseType] &&
-                  plan[id as keyof PersonalPlansDetailedResponseType] !==
-                    'null') ||
+                  `${plan[id as keyof PersonalPlansDetailedResponseType]}`) ||
                   `#${name}`}
               </Text>
             </View>

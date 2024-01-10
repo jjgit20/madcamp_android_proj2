@@ -13,7 +13,7 @@ import {
 import globalStyles from '@src/styles/style';
 import axiosInstance from '@src/utils/axiosService';
 import {differenceInDays, parseISO} from 'date-fns';
-import React, {useState} from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -23,7 +23,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import {MainStackParamsList} from '../../../types';
+import {MainStackParamsList, PersonalPlansResponseType} from '../../../types';
 import {
   StyledCardPressable,
   StyledCardPressableView,
@@ -128,22 +128,32 @@ export const getFormattedDurationInDays = (start?: string, end?: string) => {
   return `${difference}박 ${difference + 1}일`;
 };
 
-const PlanCardType1 = ({plan}: {plan: any}) => {
+const PlanCardType1 = ({plan}: {plan: PersonalPlansResponseType}) => {
   const navigation = useNavigation<StackNavigationProp<MainStackParamsList>>();
-  const [user, setUser] = useState();
-
   const handlePressLike = () => {
     const getUserPlans = async () => {
-      const userResponse = await axiosInstance.patch(`/plans/${plan}/like`);
-      setUser(userResponse.data);
+      try {
+        const likeResponse = await axiosInstance.patch(
+          `/plans/${plan.planId}/like`,
+        );
+        console.log(likeResponse.data);
+      } catch (error) {
+        console.log('Error liking: ', error);
+      }
     };
     getUserPlans();
   };
 
   const handlePressFork = () => {
     const getUserPlans = async () => {
-      const userResponse = await axiosInstance.post(`/plans/${plan}/fork`);
-      setUser(userResponse.data);
+      try {
+        const forkResponse = await axiosInstance.post(
+          `/plans/${plan.planId}/fork`,
+        );
+        console.log(forkResponse.data);
+      } catch (error) {
+        console.log('Error liking: ', error);
+      }
     };
     getUserPlans();
   };
@@ -151,15 +161,9 @@ const PlanCardType1 = ({plan}: {plan: any}) => {
   if (!plan) return null;
   const iconSize = 24;
 
-  // Function to sum up numbers in an array
-  const sum = (numbers: number[]) =>
-    numbers.reduce((acc, current) => acc + current, 0);
+  const totalLikes = plan?.likes?.length;
+  const totalForks = plan?.forks?.length;
 
-  // Calculate the sums for likes and forks
-  const totalLikes = sum(plan.likes);
-  const totalForks = sum(plan.forks);
-
-  // Use the function to calculate the duration
   const formattedDuration = getFormattedDurationInDays(
     plan.startDate,
     plan.endDate,
@@ -176,7 +180,11 @@ const PlanCardType1 = ({plan}: {plan: any}) => {
         onPress={handlePlanCard}
         android_ripple={{color: WHITE_PRESSED, foreground: true}}>
         <ImageBackground
-          source={{uri: plan.image}}
+          source={{
+            uri:
+              plan.image ||
+              'https://i.pinimg.com/564x/85/b0/02/85b00271cb3cfaa900f7d5165ee6a80d.jpg',
+          }}
           style={{
             width: '100%',
             height: 380,
@@ -195,7 +203,11 @@ const PlanCardType1 = ({plan}: {plan: any}) => {
               </Text>
             </View>
             <Image
-              source={{uri: plan.userId.image}}
+              source={{
+                uri:
+                  plan.userId?.image ||
+                  'https://i.pinimg.com/564x/85/b0/02/85b00271cb3cfaa900f7d5165ee6a80d.jpg',
+              }}
               style={styles.profileImage}
             />
           </View>
