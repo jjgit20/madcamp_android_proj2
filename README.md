@@ -60,18 +60,80 @@
 - 내 전체 여행에 대한 좋아요와 퍼가요 수를 확인할 수 있습니다.
 - 유저 본인 외의 사람들 역시 유저의 프로필과 그가 complete한 여행을 갤러리뷰로 볼 수 있습니다.
 
-![Android Large - 2.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/f6cb388f-3934-47d6-9928-26d2e10eb0fc/e3fa26c4-2f02-4a6f-84eb-7e9fe8b25028/Android_Large_-_2.png)
+# 4. API 목록
 
-![Android Large - 42.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/f6cb388f-3934-47d6-9928-26d2e10eb0fc/adfc515f-0d9b-4f59-ac20-ce7530050bba/Android_Large_-_42.png)
+### GET
 
-![Android Large - 44.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/f6cb388f-3934-47d6-9928-26d2e10eb0fc/d498df45-2022-43db-9d0d-33a358ba51f1/Android_Large_-_44.png)
+| auth/kakao | 카카오 로그인 창 url 가져오기 |
+| --- | --- |
+| auth/kakao/callback | kakao로그인을 통해 토큰 가져오기 |
+| /plans | 모든 계획 가저오기 |
+| /plans/{plan_id} | 계획 하나 가져오기 |
+| /users/{user_id} | 유저 정보 가져오기 |
+| /users/{user_id}/plans | 유저의 모든 계획 가져오기 |
 
-![Android Large - 51.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/f6cb388f-3934-47d6-9928-26d2e10eb0fc/efc60644-5be6-453c-a444-7d9c102e5075/Android_Large_-_51.png)
+### POST
 
-![Screenshot 2024-01-10 at 8.15.51 PM.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/f6cb388f-3934-47d6-9928-26d2e10eb0fc/c0d2e321-eb22-4f9d-ab2b-fd9b64b92be5/Screenshot_2024-01-10_at_8.15.51_PM.png)
+| /plans | 새로운 계획 생성하기 |
+| --- | --- |
+| /plans/{plan_id}/fork | 계획 포크하기 |
 
-![Screenshot 2024-01-10 at 8.18.00 PM.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/f6cb388f-3934-47d6-9928-26d2e10eb0fc/7eafd5ce-1fdd-4797-9047-849217906677/Screenshot_2024-01-10_at_8.18.00_PM.png)
+### PATCH
 
-![Screenshot 2024-01-10 at 8.16.03 PM.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/f6cb388f-3934-47d6-9928-26d2e10eb0fc/399f368f-bca1-4524-8e88-d6ae3dd97db2/Screenshot_2024-01-10_at_8.16.03_PM.png)
+| /plans/{plan_id} | 여행 계획 수정 |
+| --- | --- |
+| /plans/{plan_id}/like | 계획 좋아요 누르기/취소하기 |
+| /plans/{plan_id}/isPublic | 계획 공개 여부 수정하기 |
+| /plans/{plan_id}/isComplete | 계획 complete 설정하기 |
 
-![Screenshot 2024-01-10 at 8.16.48 PM.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/f6cb388f-3934-47d6-9928-26d2e10eb0fc/dafcc393-7b49-4e5c-ac9f-bfda4ddd8430/Screenshot_2024-01-10_at_8.16.48_PM.png)
+### DELETE
+
+| /plans/{plan_id} | 여행 계획 삭제 |
+| --- | --- |
+
+# 5. 기능 목록
+
+필수
+
+- 소셜 로그인
+    - 일단 카카오
+    - 로그인 확장하기
+- 여행 플랜 짜기
+    - 여행 기본 정보
+        - 나라, 도시, 날짜, 비행 관련 정보 (날짜, 시간, 공항), 여행 경비, 플랜 지도
+        - 여행 경비
+            - 총 여행 경비를 입력받아 (+/- 내외 금액으로 갈 수 있는 최적의 여행 추천 기능)
+        - 비행 관련 정보 (이미지)
+        - 여행 나라 관련 정보
+    - 장소 추가 기능
+        - day1, day2 … 별로 갈 곳 기입할 수 있는 UI + 숙소
+        - 핫플 서치 기능
+        - 장소 가격(?) 추가하기
+        - 장소마다 다른 사람들이 남긴 평점/리뷰가 있음
+        - [장소 이미지 google places api로 가져오기](https://developers.google.com/maps/documentation/places/web-service/photos)
+        - 장소 이미지 등록하기
+        - [이동 경로의 총 거리, 시간](https://developers.google.com/maps/documentation/routes/overview)
+- 여행 포스트 등록하기
+    - 여행 끝나는 날짜에 notification → 포스트를 등록하시겠습니까?
+    - 여행 평 추가
+        - 각 장소마다 별점
+        - 각 장소마다 리뷰
+- 포스트 기능
+    - 도움이 됐어요
+    - 포크 기능
+        - 다른 사람이 만들어논 계획을 포크해오는 기능
+        - 포크가 많이된 계획 카드는 상단에 뜨도록
+        - 계획을 포크 하면 그 계획을 바탕으로 수정하여 나만의 여행 목록에 추가 가능
+    - 포스트 골랐을 때 비슷한 추천 포스트 (무신사 느낌)
+    - 포스트 댓글 기능
+
+부가 기능
+
+screens
+
+- SearchScreen
+    - PostScreen
+- MyPlanScreen → 지금 계획하고 있는 것
+    - PlannerScreen
+- UserScreen → 내가 올린 포스트
+    - SettingsScreen
