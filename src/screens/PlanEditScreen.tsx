@@ -1,5 +1,6 @@
 import {useFocusEffect} from '@react-navigation/native';
 import {StackScreenProps} from '@react-navigation/stack';
+import StarIcon from '@src/assets/icons/icon-star.svg';
 import {PlansClose} from '@src/components/PlansScreenComponents/PlansClose';
 import {PlansEditDays} from '@src/components/PlansScreenComponents/PlansEditComponents/PlansEditDays';
 import {PlansEditImage} from '@src/components/PlansScreenComponents/PlansEditComponents/PlansEditImage';
@@ -8,17 +9,35 @@ import {PlansPlaceDelete} from '@src/components/PlansScreenComponents/PlansEditC
 import PlansPlaceNew from '@src/components/PlansScreenComponents/PlansEditComponents/PlansPlaceNew';
 import PlansSave from '@src/components/PlansScreenComponents/PlansEditComponents/PlansSave';
 import {PlansSaveFirst} from '@src/components/PlansScreenComponents/PlansEditComponents/PlansSaveFirst';
+import {
+  StyledRoundPressable,
+  StyledRoundPressableView,
+} from '@src/components/StyledComponents/StyledButton';
+import {
+  StyledInputView,
+  StyledTextInput,
+} from '@src/components/StyledComponents/StyledInput';
 import {StyledScrollView} from '@src/components/StyledComponents/StyledScreenView';
 import {
   BLACK,
+  BLUE,
+  BLUE_LIGHT,
+  BLUE_LIGHT_PRESSED,
   HEADING_VERTICAL_MARGIN,
+  ROUND_ICON_SIZE,
   WHITE,
 } from '@src/styles/globalStyleVariables';
 import globalStyles from '@src/styles/style';
 import axiosInstance from '@src/utils/axiosService';
 import {dateDifference} from '@src/utils/dateFormatter';
 import React, {useCallback, useState} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {
+  NativeSyntheticEvent,
+  StyleSheet,
+  Text,
+  TextInputChangeEventData,
+  View,
+} from 'react-native';
 
 import {
   ImageType,
@@ -38,6 +57,7 @@ const initPlan: PersonalPlansDetailedResponseType = {
   likes: 0,
   image: null,
   isPublic: false,
+  isComplete: false,
   cash: 0,
   places: [],
   isNull: true,
@@ -237,6 +257,67 @@ const PlanEditScreen = ({route, navigation}: Props) => {
             여행 추가 정보
           </Text>
           <PlansEditItems plan={plan} type={'extra'} modifyPlan={modifyPlan} />
+
+          <Text
+            style={[
+              globalStyles.h4,
+              {color: BLACK, marginTop: HEADING_VERTICAL_MARGIN},
+            ]}>
+            여행 리뷰
+          </Text>
+          <View
+            style={{
+              paddingHorizontal: 15,
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: 20,
+            }}>
+            <View style={{flexDirection: 'row', gap: 10}}>
+              {plan?.rating &&
+                plan?.rating !== undefined &&
+                Array.from({length: 5}, (_, index) => (
+                  <StyledRoundPressableView key={index}>
+                    <StyledRoundPressable
+                      onPress={() => modifyPlan('rating', index + 1)}
+                      android_ripple={{
+                        color: BLUE_LIGHT_PRESSED,
+                        foreground: true,
+                      }}>
+                      <StarIcon
+                        width={ROUND_ICON_SIZE}
+                        height={ROUND_ICON_SIZE}
+                        fill={
+                          plan?.rating && plan?.rating > index
+                            ? BLUE
+                            : BLUE_LIGHT
+                        }
+                      />
+                    </StyledRoundPressable>
+                  </StyledRoundPressableView>
+                ))}
+            </View>
+            <StyledInputView
+              style={{
+                height: 100,
+                alignItems: 'flex-start',
+                overflow: 'hidden',
+              }}>
+              <StyledTextInput
+                multiline={true}
+                style={{
+                  height: '100%',
+                  marginHorizontal: 10,
+                  textAlignVertical: 'top',
+                }}
+                value={plan?.selfReview}
+                onChange={(e: NativeSyntheticEvent<TextInputChangeEventData>) =>
+                  modifyPlan('selfReview', e.nativeEvent.text)
+                }
+              />
+            </StyledInputView>
+          </View>
+
           {days.map((day: Date, index: number) => (
             <PlansEditDays
               key={index}

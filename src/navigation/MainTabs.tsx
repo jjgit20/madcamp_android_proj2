@@ -15,6 +15,7 @@ const Tab = createBottomTabNavigator<MainTabsParamsList>();
 const MainTabs = () => {
   const iconSize = 20;
   const focusedIconSize = 21;
+
   return (
     <Tab.Navigator
       initialRouteName={'FinderScreen'}
@@ -66,6 +67,7 @@ const MainTabs = () => {
             />
           ),
         }}
+        initialParams={{userId: 0}}
       />
     </Tab.Navigator>
   );

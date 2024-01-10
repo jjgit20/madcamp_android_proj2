@@ -56,16 +56,26 @@ const OAuthButton = () => {
   };
 
   return (
-    <StyledPressableView>
+    <StyledPressableView style={{marginTop: 'auto'}}>
       <StyledPressable
         onPress={handleKakaoButton}
         android_ripple={{color: '#EFD604'}}
         style={{
           backgroundColor: '#FFE400',
           justifyContent: 'flex-start',
+          gap: 20,
         }}>
         <KakaoIcon width={25} height={25} />
-        <Text style={globalStyles.h5}>카카오 로그인</Text>
+        <Text
+          style={[
+            globalStyles.h4,
+            {
+              flex: 1,
+              textAlign: 'center',
+            },
+          ]}>
+          카카오 로그인
+        </Text>
       </StyledPressable>
     </StyledPressableView>
   );

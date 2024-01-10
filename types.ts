@@ -33,6 +33,7 @@ export interface PersonalPlansResponseType {
   likes: any;
   image: string | null;
   isPublic: boolean;
+  isComplete: boolean;
 }
 
 export interface PersonalPlansDetailedResponseType {
@@ -45,9 +46,13 @@ export interface PersonalPlansDetailedResponseType {
   likes: any;
   image: string | null;
   isPublic: boolean;
+  isComplete: boolean;
   cash: number;
   places: PlanPlace[];
   isNull: boolean;
+  userId?: {userId: number};
+  selfReview?: string;
+  rating?: number;
 }
 
 export interface PlanPlace {

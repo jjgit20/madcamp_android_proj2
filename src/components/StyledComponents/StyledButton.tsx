@@ -1,7 +1,7 @@
 import styled from 'styled-components/native';
 
 export const StyledPressable = styled.Pressable`
-  padding: 15px 30px;
+  padding: 15px 40px;
   flex-direction: row;
   gap: 45px;
   width: 100%;

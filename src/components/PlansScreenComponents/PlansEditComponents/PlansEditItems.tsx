@@ -140,8 +140,8 @@ const PlansEditItems = ({
               )}
               {type === 'date' && (
                 <StyledDateInput
-                  startDate={plan?.startDate}
-                  endDate={plan?.endDate}
+                  startDate={plan?.startDate as string}
+                  endDate={plan?.endDate as string}
                   modifyPlan={modifyPlan}
                 />
               )}

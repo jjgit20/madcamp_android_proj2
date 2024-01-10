@@ -93,23 +93,33 @@ const PlansScreen = () => {
         {currentPlans?.map((plan, index) => (
           <PlansCard key={index} plan={plan} />
         ))}
-        <Text
-          style={[
-            globalStyles.h2,
-            {color: BLUE, marginTop: HEADING_VERTICAL_MARGIN},
-          ]}>
-          앞으로의 여행
-        </Text>
+        {futurePlans && futurePlans.length > 0 && (
+          <Text
+            style={[
+              !currentPlans || currentPlans.length === 0
+                ? globalStyles.h1
+                : globalStyles.h2,
+              {color: BLUE, marginTop: HEADING_VERTICAL_MARGIN},
+            ]}>
+            앞으로의 여행
+          </Text>
+        )}
         {futurePlans?.map((plan, index) => (
           <PlansCard key={index} plan={plan} />
         ))}
-        <Text
-          style={[
-            globalStyles.h2,
-            {color: BLUE, marginTop: HEADING_VERTICAL_MARGIN},
-          ]}>
-          이전 여행
-        </Text>
+        {pastPlans && pastPlans.length > 0 && (
+          <Text
+            style={[
+              (!currentPlans || currentPlans.length === 0) &&
+              (!futurePlans || futurePlans.length === 0)
+                ? globalStyles.h1
+                : globalStyles.h2,
+              {color: BLUE, marginTop: HEADING_VERTICAL_MARGIN},
+            ]}>
+            이전 여행
+          </Text>
+        )}
+
         {pastPlans?.map((plan, index) => <PlansCard key={index} plan={plan} />)}
       </StyledScrollView>
       <PlansNewButton />

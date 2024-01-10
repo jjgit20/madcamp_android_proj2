@@ -1,4 +1,4 @@
-import EditIcon from '@src/assets/icons/icon-edit.svg';
+import EditIcon from '@src/assets/icons/icon-camera.svg';
 import {
   StyledRoundPressable,
   StyledRoundPressableView,
