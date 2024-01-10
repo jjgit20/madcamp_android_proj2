@@ -5,6 +5,10 @@ import {
   StyledPressableView,
 } from '@src/components/StyledComponents/StyledButton';
 import {
+  StyledInputViewSignUp,
+  StyledTextInput,
+} from '@src/components/StyledComponents/StyledInput';
+import {
   BLACK,
   BLUE,
   BLUE_PRESSED,
@@ -13,17 +17,21 @@ import {
 import globalStyles from '@src/styles/style';
 import axiosInstance from '@src/utils/axiosService';
 import React, {useState} from 'react';
-import {Text} from 'react-native';
-import EncryptedStorage from 'react-native-encrypted-storage';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import {
+  Image,
+  NativeSyntheticEvent,
+  ScrollView,
+  Text,
+  TextInputChangeEventData,
+  View,
+} from 'react-native';
 
-import {AuthContext} from '../../App';
 import {MainStackParamsList} from '../../types';
 
 type Props = StackScreenProps<MainStackParamsList, 'SignUpScreen'>;
 
 const SignUpScreen = ({route, navigation}: Props) => {
-  const {signup} = React.useContext(AuthContext);
+  // const {signup} = React.useContext(AuthContext);
   const [userInfo, setUserInfo] = useState({
     kakaoId: route.params.kakaoId,
     username: 'tester',
@@ -40,18 +48,12 @@ const SignUpScreen = ({route, navigation}: Props) => {
         userInfo,
       );
       if (signUpResponse.data.signedUp === true) {
-        await EncryptedStorage.setItem(
-          'user_session',
-          JSON.stringify({
-            token: signUpResponse.data.token,
-            userId: signUpResponse.data.userId,
-          }),
-        );
-        signup(signUpResponse.data.token);
+        navigation.navigate('WelcomeScreen', {
+          token: signUpResponse.data.token,
+          userId: signUpResponse.data.userId,
+          nickname: route.params.nickname,
+        });
       }
-      console.log(signUpResponse.data);
-
-      console.log(signUpResponse.data);
     } catch (error) {
       console.log('signup error: ', error);
     }
@@ -59,35 +61,73 @@ const SignUpScreen = ({route, navigation}: Props) => {
   return (
     <React.Fragment>
       <PlansClose color={BLACK} />
-      <SafeAreaView
-        style={{
-          flex: 1,
-          gap: 10,
+      <ScrollView
+        contentContainerStyle={{
           alignItems: 'center',
+          flex: 1,
+          gap: 20,
           paddingHorizontal: 50,
           paddingVertical: 130,
-        }}>
-        {/* <StyledInputView
-              style={{
-                height: 100,
-                alignItems: 'flex-start',
-                overflow: 'hidden',
-              }}>
-              <StyledTextInput
-                multiline={true}
-                style={{
-                  height: '100%',
-                  marginHorizontal: 10,
-                  textAlignVertical: 'top',
-                }}
-                value={userInfo.nickname}
-                onChange={(e: NativeSyntheticEvent<TextInputChangeEventData>) =>
-                  setUserInfo('selfReview', e.nativeEvent.text)
-                }
-              />
-            </StyledInputView> */}
+        }}
+        style={{}}>
+        <View
+          style={[
+            {
+              borderRadius: 400,
+              overflow: 'hidden',
+              marginBottom: 30,
+            },
+          ]}>
+          <Image
+            source={{uri: userInfo.image}}
+            style={{
+              height: 130,
+              width: 130,
+            }}
+          />
+        </View>
+        <View style={{flexDirection: 'row'}}>
+          <StyledInputViewSignUp
+            style={{
+              marginBottom: 'auto',
+            }}>
+            <StyledTextInput
+              style={{marginHorizontal: 10, textAlign: 'center'}}
+              value={userInfo.nickname}
+              onChange={(e: NativeSyntheticEvent<TextInputChangeEventData>) =>
+                setUserInfo(prevState => ({
+                  ...prevState,
+                  nickname: e.nativeEvent.text,
+                }))
+              }
+            />
+          </StyledInputViewSignUp>
+        </View>
 
-        <StyledPressableView style={{marginTop: 'auto'}}>
+        <View
+          style={{
+            flexDirection: 'row',
+          }}>
+          <StyledInputViewSignUp
+            style={{
+              marginBottom: 'auto',
+            }}>
+            <StyledTextInput
+              style={{marginHorizontal: 10, textAlign: 'center'}}
+              value={userInfo.email}
+              onChange={(e: NativeSyntheticEvent<TextInputChangeEventData>) =>
+                setUserInfo(prevState => ({
+                  ...prevState,
+                  email: e.nativeEvent.text,
+                }))
+              }
+            />
+          </StyledInputViewSignUp>
+        </View>
+
+        <View style={{flex: 1, minHeight: 80}} />
+
+        <StyledPressableView>
           <StyledPressable
             onPress={handleSignUpButton}
             android_ripple={{color: BLUE_PRESSED}}
@@ -95,7 +135,7 @@ const SignUpScreen = ({route, navigation}: Props) => {
             <Text style={[globalStyles.h4, {color: WHITE}]}>회원가입</Text>
           </StyledPressable>
         </StyledPressableView>
-      </SafeAreaView>
+      </ScrollView>
     </React.Fragment>
   );
 };

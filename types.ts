@@ -9,6 +9,11 @@ export type MainStackParamsList = {
     nickname: string;
     image: string;
   };
+  WelcomeScreen: {
+    token: string;
+    userId: number;
+    nickname: string;
+  };
 };
 
 export interface AuthContextType {

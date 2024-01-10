@@ -12,6 +12,7 @@ import LoginScreen from '@src/screens/LoginScreen';
 import PlanEditScreen from '@src/screens/PlanEditScreen';
 import PlanViewScreen from '@src/screens/PlanViewScreen';
 import SignUpScreen from '@src/screens/SignUpScreen';
+import WelcomeScreen from '@src/screens/WelcomeScreen';
 import React, {
   PropsWithChildren,
   createContext,
@@ -120,6 +121,7 @@ function App(): React.JSX.Element {
             <React.Fragment>
               <Stack.Screen name="LoginScreen" component={LoginScreen} />
               <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
+              <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
             </React.Fragment>
           )}
           {state?.token !== null && (
