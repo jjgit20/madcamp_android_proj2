@@ -1,5 +1,7 @@
+import {NavigatorScreenParams} from '@react-navigation/native';
+
 export type MainStackParamsList = {
-  MainTabs: undefined;
+  MainTabs: NavigatorScreenParams<MainTabsParamsList>;
   PlanEditScreen: {planId: number};
   PlanViewScreen: {planId: number};
   LoginScreen: undefined;

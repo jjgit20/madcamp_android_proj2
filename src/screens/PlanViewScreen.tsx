@@ -175,7 +175,7 @@ const PlanViewScreen = ({route, navigation}: Props) => {
       <View style={[StyleSheet.absoluteFill, {zIndex: -1}]}>
         <PlansClose
           color={WHITE}
-          customBack={() => navigation.navigate('MainTabs')}
+          // customBack={() => navigation.navigate('MainTabs')} //no need
         />
         {userId === plan?.userId?.userId && (
           <PlansModifyButtonBar

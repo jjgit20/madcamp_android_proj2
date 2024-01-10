@@ -1,3 +1,4 @@
+import {BottomTabNavigationProp} from '@react-navigation/bottom-tabs';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import FavoritIcon from '@src/assets/icons/Favorite_fill.svg';
@@ -23,7 +24,11 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import {MainStackParamsList, PersonalPlansResponseType} from '../../../types';
+import {
+  MainStackParamsList,
+  MainTabsParamsList,
+  PersonalPlansResponseType,
+} from '../../../types';
 import {
   StyledCardPressable,
   StyledCardPressableView,
@@ -136,6 +141,9 @@ const PlanCardType1 = ({
   modifyPlanLike: (planId: number) => void;
 }) => {
   const navigation = useNavigation<StackNavigationProp<MainStackParamsList>>();
+  const navigationTab =
+    useNavigation<BottomTabNavigationProp<MainTabsParamsList>>();
+
   const handlePressLike = async () => {
     try {
       const likeResponse = await axiosInstance.patch(
@@ -178,7 +186,15 @@ const PlanCardType1 = ({
   };
 
   const handleUserCard = () => {
-    navigation.navigate('UserScreen', {userId: plan.userId.userId});
+    navigation.navigate('MainTabs', {
+      screen: 'UserScreen',
+      params: {
+        userId: plan.userId?.userId ? plan.userId?.userId : 0,
+      },
+    });
+    navigationTab.navigate('UserScreen', {
+      userId: plan.userId?.userId ? plan.userId?.userId : 0,
+    });
   };
 
   return (
@@ -213,7 +229,7 @@ const PlanCardType1 = ({
               <Image
                 source={{
                   uri:
-                    plan.userId.image ||
+                    plan.userId?.image ||
                     'https://i.pinimg.com/564x/85/b0/02/85b00271cb3cfaa900f7d5165ee6a80d.jpg',
                 }}
                 style={styles.profileImage}
