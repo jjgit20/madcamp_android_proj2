@@ -1,3 +1,4 @@
+import {BottomTabNavigationProp} from '@react-navigation/bottom-tabs';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import FavoritIcon from '@src/assets/icons/Favorite_fill.svg';
@@ -5,6 +6,7 @@ import ForkIcon from '@src/assets/icons/fork_icon.svg';
 import StarIcon from '@src/assets/icons/Star_fill.svg';
 import {
   BLACK,
+  BLACK_PRESSED,
   BLUE,
   DARK_GREY,
   WHITE,
@@ -23,7 +25,11 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import {MainStackParamsList, PersonalPlansResponseType} from '../../../types';
+import {
+  MainStackParamsList,
+  MainTabsParamsList,
+  PersonalPlansResponseType,
+} from '../../../types';
 import {
   StyledCardPressable,
   StyledCardPressableView,
@@ -51,7 +57,7 @@ const styles = StyleSheet.create({
     right: 20, // 우측 정렬
     top: 20,
     // marginHorizontal: 20, // 양쪽으로 20px 마진 적용
-    backgroundColor: 'rgba(255, 255, 255, 0.70)',
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
     borderRadius: 20,
     // React Native doesn't support backdrop-filter, use an overlay Image or blur effect instead
   },
@@ -91,9 +97,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: WHITE,
-    borderRadius: 12,
+    borderRadius: 20,
     flex: 1,
     gap: 10,
+    paddingVertical: 4,
   },
   interactionText: {
     ...globalStyles.h6,
@@ -128,38 +135,44 @@ export const getFormattedDurationInDays = (start?: string, end?: string) => {
   return `${difference}박 ${difference + 1}일`;
 };
 
-const PlanCardType1 = ({plan}: {plan: PersonalPlansResponseType}) => {
+const PlanCardType1 = ({
+  plan,
+  modifyPlanLike,
+}: {
+  plan: PersonalPlansResponseType;
+  modifyPlanLike: (planId: number) => void;
+}) => {
   const navigation = useNavigation<StackNavigationProp<MainStackParamsList>>();
-  const handlePressLike = () => {
-    const getUserPlans = async () => {
-      try {
-        const likeResponse = await axiosInstance.patch(
-          `/plans/${plan.planId}/like`,
-        );
-        console.log(likeResponse.data);
-      } catch (error) {
-        console.log('Error liking: ', error);
-      }
-    };
-    getUserPlans();
+  const navigationTab =
+    useNavigation<BottomTabNavigationProp<MainTabsParamsList>>();
+
+  const handlePressLike = async () => {
+    try {
+      const likeResponse = await axiosInstance.patch(
+        `/plans/${plan.planId}/like`,
+      );
+      modifyPlanLike(plan.planId);
+    } catch (error) {
+      console.log('Error liking: ', error);
+    }
   };
 
-  const handlePressFork = () => {
-    const getUserPlans = async () => {
-      try {
-        const forkResponse = await axiosInstance.post(
-          `/plans/${plan.planId}/fork`,
-        );
-        console.log(forkResponse.data);
-      } catch (error) {
-        console.log('Error liking: ', error);
-      }
-    };
-    getUserPlans();
+  const handlePressFork = async () => {
+    try {
+      const forkResponse = await axiosInstance.post(
+        `/plans/${plan.planId}/fork`,
+      );
+      // console.log('forkResponse', forkResponse.data);
+      navigation.navigate('PlanEditScreen', {
+        planId: forkResponse.data.planId,
+      });
+    } catch (error) {
+      console.log('Error liking: ', error);
+    }
   };
 
   if (!plan) return null;
-  const iconSize = 24;
+  const iconSize = 20;
 
   const totalLikes = plan?.likes?.length;
   const totalForks = plan?.forks?.length;
@@ -175,7 +188,15 @@ const PlanCardType1 = ({plan}: {plan: PersonalPlansResponseType}) => {
   };
 
   const handleUserCard = () => {
-    navigation.navigate('UserScreen', {userId: plan.userId.userId});
+    navigation.navigate('MainTabs', {
+      screen: 'UserScreen',
+      params: {
+        userId: plan.userId?.userId ? plan.userId?.userId : 0,
+      },
+    });
+    navigationTab.navigate('UserScreen', {
+      userId: plan.userId?.userId ? plan.userId?.userId : 0,
+    });
   };
 
   return (
@@ -193,54 +214,69 @@ const PlanCardType1 = ({plan}: {plan: PersonalPlansResponseType}) => {
             width: '100%',
             height: 380,
           }}>
-          <View style={styles.subcard}>
-            <View style={styles.textContainer}>
-              <View style={styles.countryAndRankContainer}>
-                <Text style={[styles.countryAndRatingText]}>
-                  {plan.country}
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: BLACK_PRESSED,
+              padding: 20,
+            }}>
+            <View style={styles.subcard}>
+              <View style={styles.textContainer}>
+                <View style={styles.countryAndRankContainer}>
+                  <Text style={[styles.countryAndRatingText]}>
+                    {plan.country}
+                  </Text>
+                  <StarIcon width={iconSize} height={iconSize} />
+                  <Text style={styles.countryAndRatingText}>{plan.rating}</Text>
+                </View>
+                <Text style={styles.cityAndDateContainer}>
+                  {plan.city} - {formattedDuration}
                 </Text>
-                <StarIcon width={iconSize} height={iconSize} />
-                <Text style={styles.countryAndRatingText}>{plan.rating}</Text>
               </View>
-              <Text style={styles.cityAndDateContainer}>
-                {plan.city} - {formattedDuration}
-              </Text>
+              <TouchableOpacity onPress={handleUserCard}>
+                <Image
+                  source={{
+                    uri:
+                      plan.userId?.image ||
+                      'https://i.pinimg.com/564x/85/b0/02/85b00271cb3cfaa900f7d5165ee6a80d.jpg',
+                  }}
+                  style={styles.profileImage}
+                />
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity onPress={handleUserCard}>
-              <Image
-                source={{
-                  uri:
-                    plan.userId.image ||
-                    'https://i.pinimg.com/564x/85/b0/02/85b00271cb3cfaa900f7d5165ee6a80d.jpg',
-                }}
-                style={styles.profileImage}
-              />
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.interactionContainer}>
-            <TouchableOpacity
-              onPress={handlePressLike}
-              style={styles.interactionTextContainer}>
-              <FavoritIcon
-                width={iconSize}
-                height={iconSize}
-                style={{color: '#0989FF'}}
-              />
-              <Text style={styles.interactionText}>{totalLikes}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={handlePressFork}
-              style={styles.interactionTextContainer}>
-              <ForkIcon
-                width={iconSize}
-                height={iconSize}
-                style={{color: '#0989FF'}}
-              />
-              <Text style={styles.interactionText}>{totalForks}</Text>
-            </TouchableOpacity>
-            <View style={styles.priceContainer}>
-              <Text style={styles.price}>{cash}만원</Text>
+            <View style={styles.interactionContainer}>
+              <TouchableOpacity
+                onPress={handlePressLike}
+                style={[
+                  styles.interactionTextContainer,
+                  {backgroundColor: plan.didILikeIt ? BLUE : WHITE},
+                ]}>
+                <FavoritIcon
+                  width={iconSize}
+                  height={iconSize}
+                  style={{color: plan.didILikeIt ? WHITE : BLUE}}
+                />
+                <Text
+                  style={[
+                    styles.interactionText,
+                    {color: plan.didILikeIt ? WHITE : BLUE},
+                  ]}>
+                  {totalLikes}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handlePressFork}
+                style={styles.interactionTextContainer}>
+                <ForkIcon
+                  width={iconSize}
+                  height={iconSize}
+                  style={{color: '#0989FF'}}
+                />
+                <Text style={styles.interactionText}>{totalForks}</Text>
+              </TouchableOpacity>
+              <View style={styles.priceContainer}>
+                <Text style={styles.price}>{cash}만원</Text>
+              </View>
             </View>
           </View>
         </ImageBackground>

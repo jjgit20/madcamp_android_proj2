@@ -1,7 +1,6 @@
-import FilterIcon from '@src/assets/icons/Filter.svg';
 import SearchIcon from '@src/assets/icons/Search.svg';
 import React from 'react';
-import {View, TextInput, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, TextInput, StyleSheet} from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
@@ -36,7 +35,15 @@ const styles = StyleSheet.create({
   },
 });
 
-const SearchTab = () => {
+const SearchTab = ({
+  searchValue,
+  setSearchValue,
+  search,
+}: {
+  searchValue: string;
+  setSearchValue: (value: string) => void;
+  search: () => void;
+}) => {
   const iconSize = 24;
 
   return (
@@ -47,11 +54,14 @@ const SearchTab = () => {
           style={styles.searchInput}
           placeholder="검색"
           placeholderTextColor="#797979"
+          value={searchValue}
+          onChange={e => setSearchValue(e.nativeEvent.text)}
+          onSubmitEditing={search}
         />
       </View>
-      <TouchableOpacity style={styles.filterButton}>
+      {/* <TouchableOpacity style={styles.filterButton}>
         <FilterIcon width={iconSize} height={iconSize} />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };

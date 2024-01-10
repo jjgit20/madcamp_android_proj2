@@ -8,22 +8,15 @@ import {View, Text, StyleSheet, Image} from 'react-native';
 
 const styles = StyleSheet.create({
   profileContainer: {
-    width: '100%',
     height: 130,
     flexDirection: 'column',
     justifyContent: 'space-around', // Adjust as needed for your layout
     marginBottom: 20,
+    marginHorizontal: 20,
   },
   profileAndstatitemContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 10,
-  },
-  username: {
-    fontWeight: 'bold',
-    fontSize: 20,
-    color: '#000000',
   },
   profileImage: {
     width: 60, // Set the size as needed
@@ -35,6 +28,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statHorizontalItem: {
+    flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
   },
@@ -61,31 +55,46 @@ const profileBar = ({user}: {user: any}) => {
     <View style={styles.profileContainer}>
       <Text style={[globalStyles.h4, {color: BLACK}]}>@{user.nickname}</Text>
       <View style={styles.profileAndstatitemContainer}>
-        <Image source={{uri: user.image}} style={styles.profileImage} />
+        <View style={styles.statHorizontalItem}>
+          <Image
+            source={{
+              uri: user.image
+                ? user.image
+                : 'https://i.pinimg.com/564x/85/b0/02/85b00271cb3cfaa900f7d5165ee6a80d.jpg',
+            }}
+            style={styles.profileImage}
+          />
+        </View>
 
-        <View style={styles.statsContainer}>
-          <View style={styles.statHorizontalItem}>
-            <Text style={styles.statNumber}>{user.plans}</Text>
-            <View style={styles.statItem}>
-              <SendIcon width={24} height={24} style={{color: '#000000'}} />
-              <Text style={styles.statText}>게시물</Text>
-            </View>
-          </View>
-          <View style={styles.statHorizontalItem}>
-            <Text style={styles.statNumber}>{user.receivedLikes}</Text>
-            <View style={styles.statItem}>
-              <LikeIcon width={22} height={22} style={{color: '#000000'}} />
-              <Text style={styles.statText}>좋아요</Text>
-            </View>
-          </View>
-          <View style={styles.statHorizontalItem}>
-            <Text style={styles.statNumber}>{user.receivedForks}</Text>
-            <View style={styles.statItem}>
-              <ForkIcon width={22} height={22} style={{color: '#000000'}} />
-              <Text style={styles.statText}>퍼가요</Text>
-            </View>
+        {/* <View style={styles.statsContainer}> */}
+        <View style={styles.statHorizontalItem}>
+          <Text style={styles.statNumber}>{user.plans ? user.plans : 0}</Text>
+          <View style={styles.statItem}>
+            <SendIcon width={24} height={24} style={{color: '#000000'}} />
+            <Text style={styles.statText}>게시물</Text>
           </View>
         </View>
+
+        <View style={styles.statHorizontalItem}>
+          <Text style={styles.statNumber}>
+            {user.receivedLikes ? user.receivedLikes : 0}
+          </Text>
+          <View style={styles.statItem}>
+            <LikeIcon width={22} height={22} style={{color: '#000000'}} />
+            <Text style={styles.statText}>좋아요</Text>
+          </View>
+        </View>
+
+        <View style={styles.statHorizontalItem}>
+          <Text style={styles.statNumber}>
+            {user.receivedForks ? user.receivedForks : 0}
+          </Text>
+          <View style={styles.statItem}>
+            <ForkIcon width={22} height={22} style={{color: '#000000'}} />
+            <Text style={styles.statText}>퍼가요</Text>
+          </View>
+        </View>
+        {/* </View> */}
       </View>
     </View>
   );

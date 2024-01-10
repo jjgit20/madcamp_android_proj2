@@ -60,7 +60,11 @@ const PlanViewScreen = ({route, navigation}: Props) => {
   const [userId, setUserId] = useState<number>(0);
 
   const getPlan = useCallback(async () => {
-    if (plan?.isNull === true && route.params.planId !== 0) {
+    if (route.params.reload) {
+      await new Promise(resolve => setTimeout(resolve, 600)); // Introduce a delay for rendering
+    }
+    if (route.params.planId !== 0) {
+      // if (plan?.isNull === true && route.params.planId !== 0) {
       const personalPlansDetailedResponse = await axiosInstance.get(
         `/plans/${route.params.planId}`,
       );
@@ -77,7 +81,7 @@ const PlanViewScreen = ({route, navigation}: Props) => {
         ),
       );
     }
-  }, [plan, route.params.planId]);
+  }, [route.params.planId, route.params.reload]);
 
   // useEffect(() => {
   //   getPlan();
@@ -86,8 +90,18 @@ const PlanViewScreen = ({route, navigation}: Props) => {
   useFocusEffect(
     useCallback(() => {
       getPlan();
+      // //    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [getPlan]),
   );
+
+  // returning from editing screen
+  // useEffect(() => {
+  //   const unsubscribe = navigation.addListener('focus', () => {
+  //     getPlan();
+  //   });
+
+  //   return unsubscribe;
+  // }, [navigation, getPlan]);
 
   useEffect(() => {
     const getUserId = async () => {
@@ -114,6 +128,48 @@ const PlanViewScreen = ({route, navigation}: Props) => {
     });
   }, []);
 
+  const handlePressLike = async () => {
+    if (!plan) {
+      return;
+    }
+    try {
+      const likeResponse = await axiosInstance.patch(
+        `/plans/${plan.planId}/like`,
+      );
+      setPlan(prevState => {
+        if (prevState == null) {
+          return null;
+        }
+        return {
+          ...prevState,
+          likes: plan.didILikeIt
+            ? plan.likes.slice(0, -1) // Remove the last element
+            : [...plan.likes, 'tmp'],
+          didILikeIt: !prevState.didILikeIt,
+        };
+      });
+    } catch (error) {
+      console.log('Error liking: ', error);
+    }
+  };
+
+  const handlePressFork = async () => {
+    if (!plan) {
+      return;
+    }
+    try {
+      const forkResponse = await axiosInstance.post(
+        `/plans/${plan.planId}/fork`,
+      );
+      // console.log('forkResponse', forkResponse.data);
+      navigation.navigate('PlanEditScreen', {
+        planId: forkResponse.data.planId,
+      });
+    } catch (error) {
+      console.log('Error liking: ', error);
+    }
+  };
+
   return (
     <React.Fragment>
       <PlansModal
@@ -133,7 +189,7 @@ const PlanViewScreen = ({route, navigation}: Props) => {
       <View style={[StyleSheet.absoluteFill, {zIndex: -1}]}>
         <PlansClose
           color={WHITE}
-          customBack={() => navigation.navigate('MainTabs')}
+          // customBack={() => navigation.navigate('MainTabs')} //no need
         />
         {userId === plan?.userId?.userId && (
           <PlansModifyButtonBar
@@ -146,7 +202,12 @@ const PlanViewScreen = ({route, navigation}: Props) => {
             }
           />
         )}
-        <PlansViewImage image={image} plan={plan} />
+        <PlansViewImage
+          image={image}
+          plan={plan}
+          handlePressLike={handlePressLike}
+          handlePressFork={handlePressFork}
+        />
         <StyledScrollView
           contentContainerStyle={{gap: 15, paddingVertical: 20}}>
           <Text style={[globalStyles.h4, {color: BLACK}]}>여행 필수 정보</Text>
@@ -190,7 +251,7 @@ const PlanViewScreen = ({route, navigation}: Props) => {
                   />
                 ))}
             </View>
-            <Text style={[globalStyles.h4, {color: BLUE}]}>
+            <Text style={[globalStyles.h4, {color: BLUE, textAlign: 'center'}]}>
               {plan?.selfReview}
             </Text>
           </View>

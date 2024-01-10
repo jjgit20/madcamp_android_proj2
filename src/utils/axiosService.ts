@@ -22,7 +22,6 @@ axiosInstance.interceptors.request.use(
     return config;
   },
   (error: AxiosError | Error): Promise<AxiosError> => {
-    console.log(error);
     return Promise.reject(error);
   },
 );

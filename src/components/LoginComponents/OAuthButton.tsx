@@ -7,8 +7,9 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import KakaoIcon from '@src/assets/icons/oauth_kakao.svg';
 import globalStyles from '@src/styles/style';
 import axiosInstance from '@src/utils/axiosService';
+import {AxiosError} from 'axios';
 import React from 'react';
-import {Text} from 'react-native';
+import {Text, View} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 
 import {AuthContext} from '../../../App';
@@ -32,16 +33,19 @@ const OAuthButton = () => {
         kakaoId: kakaoProfileResponse.id,
       });
       if (loginResponse.data.signedUp === true) {
+        const expiry = new Date();
+        expiry.setDate(expiry.getDate() + 1);
         await EncryptedStorage.setItem(
           'user_session',
           JSON.stringify({
             token: loginResponse.data.token,
             userId: loginResponse.data.userId,
+            expiration: expiry.getTime(),
           }),
         );
         login(loginResponse.data.token);
       } else {
-        console.log(kakaoProfileResponse);
+        // console.log(kakaoProfileResponse);
         navigation.navigate('SignUpScreen', {
           kakaoId: kakaoProfileResponse.id,
           email: kakaoProfileResponse.email,
@@ -49,9 +53,14 @@ const OAuthButton = () => {
           image: kakaoProfileResponse.profileImageUrl,
         });
       }
-      console.log(loginResponse.data);
+      // console.log(loginResponse.data);
     } catch (error) {
-      console.log('login error: ', error);
+      console.log(
+        'login error: ',
+        error,
+        (error as AxiosError).message,
+        (error as AxiosError).cause,
+      );
     }
   };
 
@@ -65,13 +74,15 @@ const OAuthButton = () => {
           justifyContent: 'flex-start',
           gap: 20,
         }}>
-        <KakaoIcon width={25} height={25} />
+        <View style={{flex: 1, alignItems: 'center'}}>
+          <KakaoIcon width={25} height={25} />
+        </View>
         <Text
           style={[
             globalStyles.h4,
             {
-              flex: 1,
-              textAlign: 'center',
+              flex: 2,
+              alignItems: 'flex-start',
             },
           ]}>
           카카오 로그인

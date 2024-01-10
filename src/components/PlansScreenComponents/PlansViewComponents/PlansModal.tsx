@@ -53,7 +53,7 @@ export const PlansModal = React.memo(
           setShowSuccessMessage(false);
           navigation.navigate('MainTabs');
           closeModal();
-        }, 1000);
+        }, 500);
       } catch (error) {
         console.log('Error removing  plan: ', error);
       }
@@ -72,7 +72,7 @@ export const PlansModal = React.memo(
         setTimeout(() => {
           setShowSuccessMessage(false);
           closeModal();
-        }, 1000);
+        }, 500);
       } catch (error) {
         console.log('Error removing  plan: ', error);
       }
@@ -91,7 +91,7 @@ export const PlansModal = React.memo(
         setTimeout(() => {
           setShowSuccessMessage(false);
           closeModal();
-        }, 2000);
+        }, 500);
       } catch (error) {
         console.log('Error removing  plan: ', error);
       }
@@ -115,7 +115,7 @@ export const PlansModal = React.memo(
               gap: 20,
             }}>
             {showSuccessMessage ? (
-              <Text style={globalStyles.h4}>
+              <Text style={globalStyles.h5}>
                 {type === 'delete'
                   ? '삭제되었습니다!'
                   : type === 'complete'
@@ -124,7 +124,7 @@ export const PlansModal = React.memo(
               </Text>
             ) : (
               <React.Fragment>
-                <Text style={[globalStyles.h4, {color: BLACK}]}>
+                <Text style={[globalStyles.h5, {color: BLACK}]}>
                   {type === 'delete'
                     ? '이 여행을 삭제하시겠습니까?'
                     : type === 'complete'

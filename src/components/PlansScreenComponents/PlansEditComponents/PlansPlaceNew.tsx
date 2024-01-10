@@ -16,10 +16,11 @@ import {
   HEADING_VERTICAL_MARGIN,
 } from '@src/styles/globalStyleVariables';
 import globalStyles from '@src/styles/style';
+import {countryCodes} from '@src/utils/\bselectService';
 import axiosInstance from '@src/utils/axiosService';
 import {getLocationType} from '@src/utils/locationTypingService';
-import React, {useMemo, useRef, useState} from 'react';
-import {Text, View} from 'react-native';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
+import {BackHandler, Text, View} from 'react-native';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
 
 import {Place, PlanPlace} from '../../../../types';
@@ -30,15 +31,17 @@ const PlansPlaceNew = ({
   visitDate,
   closeModal,
   newPlanPlace,
+  planCountry,
 }: {
   planId: number;
   orderInDay: number;
   visitDate: number;
   closeModal: () => void;
   newPlanPlace: (place: PlanPlace) => void;
+  planCountry: string | null | undefined;
 }) => {
   const [place, setPlace] = useState<Place>();
-  const snapPoints = useMemo(() => ['50%', '75%'], []);
+  const snapPoints = useMemo(() => ['60%', '75%'], []);
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
   const handleNewPlanPlace = async () => {
@@ -60,6 +63,18 @@ const PlansPlaceNew = ({
       console.log('Error adding place to plan: ', error);
     }
   };
+
+  useEffect(() => {
+    const backAction = () => {
+      closeModal();
+      return true;
+    };
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+    return () => backHandler.remove();
+  }, [closeModal]);
 
   return (
     <BottomSheetModalProvider>
@@ -89,7 +104,11 @@ const PlansPlaceNew = ({
           query={{
             key: GOOGLE_API_KEY,
             language: 'ko',
-            // components: 'country:kr',
+            components: `country:${
+              planCountry &&
+              Object.keys(countryCodes).includes(planCountry) &&
+              countryCodes[planCountry as keyof typeof countryCodes]
+            }`,
           }}
           styles={styles.search}
           fetchDetails

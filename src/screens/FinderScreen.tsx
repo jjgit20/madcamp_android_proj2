@@ -1,11 +1,12 @@
+import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
 import {useFocusEffect} from '@react-navigation/native';
 import PlanCardType1 from '@src/components/PlanCards/planCardType1';
 import SearchTab from '@src/components/searchBar';
 import axiosInstance from '@src/utils/axiosService';
 import React, {useCallback, useState} from 'react';
 import {StyleSheet, View, FlatList} from 'react-native';
-import {MainTabsParamsList} from '../../types';
-import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
+
+import {MainTabsParamsList, PersonalPlansResponseType} from '../../types';
 
 const styles = StyleSheet.create({
   container: {
@@ -19,34 +20,69 @@ const styles = StyleSheet.create({
   },
 });
 
-const renderItem = ({item}: {item: any}) => {
-  console.log('ALLITEM', item);
-  return <PlanCardType1 plan={item} />;
+const renderItem = ({
+  item,
+  modifyPlanLike,
+}: {
+  item: PersonalPlansResponseType;
+  modifyPlanLike: (planId: number) => void;
+}) => {
+  return <PlanCardType1 plan={item} modifyPlanLike={modifyPlanLike} />;
 };
 
 type Props = BottomTabScreenProps<MainTabsParamsList, 'FinderScreen', 'Tab'>;
 
 const FinderScreen = ({route, navigation}: Props) => {
-  const [plans, setPlans] = useState();
+  const [plans, setPlans] = useState<PersonalPlansResponseType[]>([]);
 
   useFocusEffect(
     useCallback(() => {
       const getUserPlans = async () => {
         const allUserPlanResponse = await axiosInstance.get(`/plans`);
-        console.log('FinderScreen', allUserPlanResponse.data);
         setPlans(allUserPlanResponse.data);
       };
       getUserPlans();
     }, []),
   );
 
+  const modifyPlanLike = useCallback((planId: number) => {
+    setPlans(prevState =>
+      prevState.map(plan =>
+        plan.planId === planId
+          ? {
+              ...plan,
+              didILikeIt: !plan.didILikeIt,
+              likes: plan.didILikeIt
+                ? plan.likes.slice(0, -1) // Remove the last element
+                : [...plan.likes, 'tmp'],
+            }
+          : plan,
+      ),
+    );
+  }, []);
+
+  const [searchValue, setSearchValue] = useState('');
+  const search = useCallback(() => {
+    const getUserPlans = async () => {
+      const allUserPlanResponse = await axiosInstance.get(
+        `/plans?search=${searchValue}`,
+      );
+      setPlans(allUserPlanResponse.data);
+    };
+    getUserPlans();
+  }, [searchValue]);
+
   return (
     <View style={styles.container}>
-      <SearchTab />
+      <SearchTab
+        searchValue={searchValue}
+        setSearchValue={(value: string) => setSearchValue(value)}
+        search={search}
+      />
       <FlatList
         data={plans}
-        renderItem={renderItem}
-        keyExtractor={item => item.planId}
+        renderItem={({item}) => renderItem({item, modifyPlanLike})}
+        keyExtractor={item => item.planId.toString()}
         contentContainerStyle={{gap: 15}}
         style={{paddingHorizontal: 20}}
       />

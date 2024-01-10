@@ -24,11 +24,15 @@ const WelcomeScreen = ({route, navigation}: Props) => {
   const {signup} = React.useContext(AuthContext);
 
   const handleSignUpButton = async () => {
+    const expiry = new Date();
+    expiry.setDate(expiry.getDate() + 1);
+
     await EncryptedStorage.setItem(
       'user_session',
       JSON.stringify({
         token: route.params.token,
         userId: route.params.userId,
+        expiration: expiry.getTime(),
       }),
     );
     signup(route.params.token);

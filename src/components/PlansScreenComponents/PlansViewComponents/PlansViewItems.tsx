@@ -91,16 +91,17 @@ const PlansViewItems = ({
                   `${dateFormatter(
                     plan?.startDate as string,
                   )} ~ ${dateFormatter(plan?.endDate as string)}`}
-                {id === 'money' && plan?.cash.toLocaleString('ko-KR')}
+                {id === 'cash' && `${plan?.cash.toLocaleString('ko-KR')} 원`}
                 {id !== 'date' &&
-                  ((plan &&
-                    `${plan[id as keyof PersonalPlansDetailedResponseType]}` &&
-                    plan[id as keyof PersonalPlansDetailedResponseType] !==
-                      'null') ||
-                    `#${name}`)}
-                {(plan &&
+                  id !== 'cash' &&
+                  (`${plan?.[
+                    id as keyof PersonalPlansDetailedResponseType
+                  ]}` !== 'null'
+                    ? `${plan?.[id as keyof PersonalPlansDetailedResponseType]}`
+                    : `#${name}`)}
+                {/* {(plan &&
                   `${plan[id as keyof PersonalPlansDetailedResponseType]}`) ||
-                  `#${name}`}
+                  `#${name}`} */}
               </Text>
             </View>
           ),
