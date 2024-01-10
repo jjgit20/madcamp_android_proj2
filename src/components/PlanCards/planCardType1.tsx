@@ -1,6 +1,18 @@
+import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import FavoritIcon from '@src/assets/icons/Favorite_fill.svg';
 import ForkIcon from '@src/assets/icons/fork_icon.svg';
 import StarIcon from '@src/assets/icons/Star_fill.svg';
+import {
+  BLACK,
+  BLUE,
+  DARK_GREY,
+  WHITE,
+  WHITE_PRESSED,
+} from '@src/styles/globalStyleVariables';
+import globalStyles from '@src/styles/style';
+import axiosInstance from '@src/utils/axiosService';
+import {differenceInDays, parseISO} from 'date-fns';
 import React from 'react';
 import {
   View,
@@ -11,23 +23,22 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-const profileImage = require('../../assets/image/airplane.png');
-const backgroundImage = require('../../assets/image/tokyo.png');
+import {MainStackParamsList, PersonalPlansResponseType} from '../../../types';
+import {
+  StyledCardPressable,
+  StyledCardPressableView,
+} from '../StyledComponents/StyledButton';
 
 const styles = StyleSheet.create({
   card: {
-    width: '100%',
+    flex: 1,
     height: 380,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 16,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 24,
+    elevation: 15,
+    backgroundColor: 'rgba(0, 0, 0, 1)',
     borderRadius: 30, // 이제 이 속성은 card에 직접 적용됩니다.
     overflow: 'hidden', // borderRadius 적용을 위해 필요합니다.
-    marginBottom: 20,
+    marginHorizontal: 20,
+    marginVertical: 10,
   },
   subcard: {
     height: 100,
@@ -52,13 +63,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-start',
+    gap: 5,
   },
   cityAndDateContainer: {
+    ...globalStyles.body2,
     alignSelf: 'flex-start',
-    color: '#797979',
-    fontSize: 16,
-    fontWeight: '400',
-    fontFamily: 'Inter',
+    color: DARK_GREY,
   },
   profileImage: {
     width: 70, // Set the width as needed
@@ -73,75 +83,169 @@ const styles = StyleSheet.create({
     left: 20,
     right: 20,
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    gap: 15,
+    flex: 1,
   },
-  interactionText: {
+  interactionTextContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
+    justifyContent: 'center',
+    backgroundColor: WHITE,
     borderRadius: 12,
-    color: '#0989FF',
-    fontSize: 14,
-    fontWeight: '700',
-    fontFamily: 'Inter',
-    paddingHorizontal: 10,
-    paddingVertical: 2,
+    flex: 1,
+    gap: 10,
+  },
+  interactionText: {
+    ...globalStyles.h6,
+    color: BLUE,
+  },
+  priceContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: BLUE,
+    borderRadius: 12,
+    flex: 1,
   },
   price: {
-    backgroundColor: '#0989FF',
-    borderRadius: 12,
     color: 'white',
-    fontSize: 14,
-    fontWeight: '700',
-    fontFamily: 'Inter',
-    paddingHorizontal: 10,
-    paddingVertical: 2,
+    ...globalStyles.h6,
   },
   countryAndRatingText: {
-    color: 'black',
-    fontSize: 24,
-    fontWeight: '700',
-    fontFamily: 'Inter',
+    ...globalStyles.h3,
+    color: BLACK,
   },
 });
 
-const PlanCardType1 = () => {
+export const getFormattedDurationInDays = (start?: string, end?: string) => {
+  if (!start || !end) {
+    // If either start or end date is missing, return 0
+
+    return `0박 1일`;
+  }
+  const startDate = parseISO(start);
+  const endDate = parseISO(end);
+  const difference = differenceInDays(endDate, startDate);
+  return `${difference}박 ${difference + 1}일`;
+};
+
+const PlanCardType1 = ({plan}: {plan: PersonalPlansResponseType}) => {
+  const navigation = useNavigation<StackNavigationProp<MainStackParamsList>>();
+  const handlePressLike = () => {
+    const getUserPlans = async () => {
+      try {
+        const likeResponse = await axiosInstance.patch(
+          `/plans/${plan.planId}/like`,
+        );
+        console.log(likeResponse.data);
+      } catch (error) {
+        console.log('Error liking: ', error);
+      }
+    };
+    getUserPlans();
+  };
+
+  const handlePressFork = () => {
+    const getUserPlans = async () => {
+      try {
+        const forkResponse = await axiosInstance.post(
+          `/plans/${plan.planId}/fork`,
+        );
+        console.log(forkResponse.data);
+      } catch (error) {
+        console.log('Error liking: ', error);
+      }
+    };
+    getUserPlans();
+  };
+
+  if (!plan) return null;
   const iconSize = 24;
 
-  return (
-    <ImageBackground source={backgroundImage} style={styles.card}>
-      <View style={styles.subcard}>
-        <View style={styles.textContainer}>
-          <View style={styles.countryAndRankContainer}>
-            <Text style={styles.countryAndRatingText}>일본1</Text>
-            <StarIcon width={iconSize} height={iconSize} />
-            <Text style={styles.countryAndRatingText}>4.5</Text>
-          </View>
-          <Text style={styles.cityAndDateContainer}>도쿄 - 3박4일</Text>
-        </View>
-        <Image source={profileImage} style={styles.profileImage} />
-      </View>
+  const totalLikes = plan?.likes?.length;
+  const totalForks = plan?.forks?.length;
 
-      <View style={styles.interactionContainer}>
-        <TouchableOpacity style={styles.interactionText}>
-          <FavoritIcon
-            width={iconSize}
-            height={iconSize}
-            style={{color: '#0989FF'}}
-          />
-          <Text style={styles.interactionText}>637</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.interactionText}>
-          <ForkIcon
-            width={iconSize}
-            height={iconSize}
-            style={{color: '#0989FF'}}
-          />
-          <Text style={styles.interactionText}>2,853</Text>
-        </TouchableOpacity>
-        <Text style={styles.price}>160 만원</Text>
-      </View>
-    </ImageBackground>
+  const formattedDuration = getFormattedDurationInDays(
+    plan.startDate,
+    plan.endDate,
+  );
+  const cash = Math.round(plan.cash / 10000);
+
+  const handlePlanCard = () => {
+    navigation.navigate('PlanViewScreen', {planId: plan.planId});
+  };
+
+  const handleUserCard = () => {
+    navigation.navigate('UserScreen', {userId: plan.userId.userId});
+  };
+
+  return (
+    <StyledCardPressableView>
+      <StyledCardPressable
+        onPress={handlePlanCard}
+        android_ripple={{color: WHITE_PRESSED, foreground: true}}>
+        <ImageBackground
+          source={{
+            uri:
+              plan.image ||
+              'https://i.pinimg.com/564x/85/b0/02/85b00271cb3cfaa900f7d5165ee6a80d.jpg',
+          }}
+          style={{
+            width: '100%',
+            height: 380,
+          }}>
+          <View style={styles.subcard}>
+            <View style={styles.textContainer}>
+              <View style={styles.countryAndRankContainer}>
+                <Text style={[styles.countryAndRatingText]}>
+                  {plan.country}
+                </Text>
+                <StarIcon width={iconSize} height={iconSize} />
+                <Text style={styles.countryAndRatingText}>{plan.rating}</Text>
+              </View>
+              <Text style={styles.cityAndDateContainer}>
+                {plan.city} - {formattedDuration}
+              </Text>
+            </View>
+            <TouchableOpacity onPress={handleUserCard}>
+              <Image
+                source={{
+                  uri:
+                    plan.userId.image ||
+                    'https://i.pinimg.com/564x/85/b0/02/85b00271cb3cfaa900f7d5165ee6a80d.jpg',
+                }}
+                style={styles.profileImage}
+              />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.interactionContainer}>
+            <TouchableOpacity
+              onPress={handlePressLike}
+              style={styles.interactionTextContainer}>
+              <FavoritIcon
+                width={iconSize}
+                height={iconSize}
+                style={{color: '#0989FF'}}
+              />
+              <Text style={styles.interactionText}>{totalLikes}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handlePressFork}
+              style={styles.interactionTextContainer}>
+              <ForkIcon
+                width={iconSize}
+                height={iconSize}
+                style={{color: '#0989FF'}}
+              />
+              <Text style={styles.interactionText}>{totalForks}</Text>
+            </TouchableOpacity>
+            <View style={styles.priceContainer}>
+              <Text style={styles.price}>{cash}만원</Text>
+            </View>
+          </View>
+        </ImageBackground>
+      </StyledCardPressable>
+    </StyledCardPressableView>
   );
 };
 

@@ -1,6 +1,15 @@
+import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import FavoritIcon from '@src/assets/icons/Favorite_fill.svg';
 import ForkIcon from '@src/assets/icons/fork_icon.svg';
 import ViewIcon from '@src/assets/icons/View.svg';
+import ViewHideIcon from '@src/assets/icons/View_hide.svg';
+import {
+  BLACK_PRESSED,
+  WHITE,
+  WHITE_PRESSED,
+} from '@src/styles/globalStyleVariables';
+import globalStyles from '@src/styles/style';
 import React from 'react';
 import {
   View,
@@ -11,37 +20,36 @@ import {
   Dimensions,
 } from 'react-native';
 
+import {MainStackParamsList, PersonalPlansResponseType} from '../../../types';
+import {
+  StyledCardPressable,
+  StyledCardPressableView,
+} from '../StyledComponents/StyledButton';
+
 const windowWidth = Dimensions.get('window').width;
 const cardWidth = windowWidth / 2 - 25;
-const profileImage = require('../../assets/image/airplane.png');
-const backgroundImage = require('../../assets/image/tokyo.png');
 
 const styles = StyleSheet.create({
   card: {
     flex: 1 / 2,
     height: cardWidth,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 16,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 24,
+    elevation: 3,
+    backgroundColor: 'rgba(0, 0, 0, 1)',
     borderRadius: 30, // 이제 이 속성은 card에 직접 적용됩니다.
     overflow: 'hidden', // borderRadius 적용을 위해 필요합니다.
     margin: 5,
   },
   darkFilter: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // This creates the semi-transparent overlay
+    backgroundColor: BLACK_PRESSED, // This creates the semi-transparent overlay
   },
   rowWiseContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     marginTop: 20, // Add margin to the top of the container
     marginBottom: 20, // Add margin to the bottom of the container
     marginLeft: 20, // Add margin to the left of the container
     marginRight: 20, // Add margin to the right of the container
+    gap: 10,
   },
   columnWiseContainer: {
     flexDirection: 'column',
@@ -49,55 +57,108 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   countryText: {
-    color: 'white',
-    fontSize: 24,
-    fontWeight: '700',
-    fontFamily: 'Inter',
+    ...globalStyles.h3,
+    color: WHITE,
   },
-  interactionText: {
+  interactionTextContainer: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: 12,
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: '700',
-    fontFamily: 'Inter',
-    paddingHorizontal: 10,
     paddingVertical: 2,
+    gap: 10,
+  },
+  interactionText: {
+    ...globalStyles.h6,
+    color: WHITE,
   },
 });
 
-const PlanCardType3 = ({backgroundImage, country, likes, forks}) => {
+const PlanCardType3 = ({
+  plan,
+  index,
+  isMyPage,
+}: {
+  plan: PersonalPlansResponseType;
+  index: number;
+  isMyPage: boolean;
+}) => {
   const iconSize = 24;
+  // Function to sum up numbers in an array
+  const sum = (numbers: number[]) =>
+    numbers.reduce((acc, current) => acc + current, 0);
+
+  // Calculate the sums for likes and forks
+  const totalLikes = sum(plan?.likes);
+  const totalForks = sum(plan?.forks);
+
+  const VisibilityIcon = plan?.isPublic ? ViewIcon : ViewHideIcon;
+
+  const navigation = useNavigation<StackNavigationProp<MainStackParamsList>>();
+  const handlePlanCard = () => {
+    navigation.navigate('PlanViewScreen', {planId: plan.planId});
+  };
+
+  if (!plan) return null;
 
   return (
-    <ImageBackground source={backgroundImage} style={styles.card}>
-      <View style={styles.darkFilter} />
-      <View style={styles.columnWiseContainer}>
-        <View style={styles.rowWiseContainer}>
-          <Text style={styles.countryText}>{`${country}`}</Text>
-          <ViewIcon width={iconSize} height={iconSize} />
-        </View>
-        <View style={styles.rowWiseContainer}>
-          <TouchableOpacity style={styles.interactionText}>
-            <FavoritIcon
-              width={iconSize}
-              height={iconSize}
-              style={{color: '#ffffff'}}
-            />
-            <Text style={styles.interactionText}>{`${likes}`}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.interactionText}>
-            <ForkIcon
-              width={iconSize}
-              height={iconSize}
-              style={{color: '#ffffff'}}
-            />
-            <Text style={styles.interactionText}>{`${forks}`}</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </ImageBackground>
+    <StyledCardPressableView
+      style={{
+        flex: 1 / 2,
+        // width: '50%',
+        height: cardWidth,
+        marginRight: index % 2 === 0 ? 7 : 0,
+        marginLeft: index % 2 === 0 ? 0 : 7,
+        marginVertical: 7,
+      }}>
+      <StyledCardPressable
+        onPress={handlePlanCard}
+        android_ripple={{color: WHITE_PRESSED, foreground: true}}>
+        <ImageBackground
+          source={
+            plan.image && plan.image !== ''
+              ? {uri: plan.image}
+              : require('@src/assets/images/default_image.png')
+          }>
+          <View style={styles.darkFilter} />
+          <View style={styles.columnWiseContainer}>
+            <View style={styles.rowWiseContainer}>
+              <Text style={styles.countryText}>{plan.country}</Text>
+              {isMyPage && (
+                <VisibilityIcon
+                  width={iconSize}
+                  height={iconSize}
+                  style={{color: '#ffffff', margin: 5, marginLeft: 'auto'}}
+                />
+              )}
+            </View>
+            <View style={styles.rowWiseContainer}>
+              <TouchableOpacity style={styles.interactionTextContainer}>
+                <FavoritIcon
+                  width={iconSize}
+                  height={iconSize}
+                  style={{color: '#ffffff'}}
+                />
+                <Text style={styles.interactionText}>
+                  {totalLikes.toString()}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.interactionTextContainer}>
+                <ForkIcon
+                  width={iconSize}
+                  height={iconSize}
+                  style={{color: '#ffffff'}}
+                />
+                <Text style={styles.interactionText}>
+                  {totalForks.toString()}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ImageBackground>
+      </StyledCardPressable>
+    </StyledCardPressableView>
   );
 };
 

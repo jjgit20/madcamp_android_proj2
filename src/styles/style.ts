@@ -7,7 +7,7 @@ const globalStyles = StyleSheet.create({
   },
   h2: {
     fontSize: 27,
-    fontFamily: 'Pretendard-Bold',
+    fontFamily: 'Pretendard-ExtraBold',
   },
   h3: {
     fontSize: 24,

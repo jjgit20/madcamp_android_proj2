@@ -1,7 +1,7 @@
 import styled from 'styled-components/native';
 
 export const StyledPressable = styled.Pressable`
-  padding: 15px 30px;
+  padding: 15px 40px;
   flex-direction: row;
   gap: 45px;
   width: 100%;
@@ -25,7 +25,6 @@ export const StyledCardPressable = styled.Pressable`
 export const StyledCardPressableView = styled.View`
   border-radius: 20px;
   overflow: hidden;
-  elevation: 1;
 `;
 
 export const StyledRoundPressable = styled.Pressable`

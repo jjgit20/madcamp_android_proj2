@@ -10,6 +10,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center', // 센터 정렬
     alignItems: 'center', // 아이템 세로 정렬
     paddingVertical: 15,
+    backgroundColor: '#fc00000',
+    paddingHorizontal: 20,
   },
   searchBox: {
     flex: 1, // 나머지 공간 모두 차지
@@ -30,6 +32,7 @@ const styles = StyleSheet.create({
   },
   filterButton: {
     padding: 10, // 필터 버튼의 패딩
+    paddingRight: 0,
   },
 });
 

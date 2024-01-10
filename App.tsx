@@ -11,8 +11,8 @@ import MainTabs from '@src/navigation/MainTabs';
 import LoginScreen from '@src/screens/LoginScreen';
 import PlanEditScreen from '@src/screens/PlanEditScreen';
 import PlanViewScreen from '@src/screens/PlanViewScreen';
-import SearchPlaceScreen from '@src/screens/SearchPlaceScreen';
 import SignUpScreen from '@src/screens/SignUpScreen';
+import WelcomeScreen from '@src/screens/WelcomeScreen';
 import React, {
   PropsWithChildren,
   createContext,
@@ -84,7 +84,7 @@ function App(): React.JSX.Element {
 
   const retrieveUserSession = async () => {
     try {
-      // await EncryptedStorage.setItem('user_session', null);
+      await EncryptedStorage.setItem('user_session', null);
       const userSession = await EncryptedStorage.getItem('user_session');
       dispatch({
         type: 'LOAD_TOKEN',
@@ -121,6 +121,7 @@ function App(): React.JSX.Element {
             <React.Fragment>
               <Stack.Screen name="LoginScreen" component={LoginScreen} />
               <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
+              <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
             </React.Fragment>
           )}
           {state?.token !== null && (
@@ -128,10 +129,6 @@ function App(): React.JSX.Element {
               <Stack.Screen name="MainTabs" component={MainTabs} />
               <Stack.Screen name="PlanEditScreen" component={PlanEditScreen} />
               <Stack.Screen name="PlanViewScreen" component={PlanViewScreen} />
-              <Stack.Screen
-                name="SearchPlaceScreen"
-                component={SearchPlaceScreen}
-              />
             </React.Fragment>
           )}
         </Stack.Navigator>

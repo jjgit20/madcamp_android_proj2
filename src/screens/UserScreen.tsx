@@ -1,157 +1,107 @@
+import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
+import {useFocusEffect} from '@react-navigation/native';
 import PlanCardType3 from '@src/components/PlanCards/planCardType3';
+import ProfileBar from '@src/components/profileBar';
 import axiosInstance from '@src/utils/axiosService';
-import React, {useEffect, useState} from 'react';
-import {FlatList, StyleSheet} from 'react-native';
+import React, {useCallback, useState} from 'react';
+import {View, FlatList, StyleSheet} from 'react-native';
+import EncryptedStorage from 'react-native-encrypted-storage';
+
+import {MainTabsParamsList} from '../../types';
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1, // 이 컨테이너가 화면 전체를 차지하도록 함
+    paddingHorizontal: 20, // 좌우에만 20px의 패딩 적용
+    backgroundColor: 'rgb(255, 255, 255)',
+    paddingVertical: 20,
+  },
   column: {
     flex: 1,
     justifyContent: 'space-between',
-    paddingHorizontal: 15,
   },
 });
 
-const dummyData = [
-  {
-    id: '0',
-    country: 'Japan',
-    likes: '637',
-    forks: '2,853',
-    backgroundImage: require('@src/assets/image/tokyo.png'),
-  },
-  {
-    id: '1',
-    country: 'Italy',
-    likes: '431',
-    forks: '1,123',
-    backgroundImage: require('@src/assets/image/tokyo.png'),
-  },
-  {
-    id: '2',
-    country: 'Italy',
-    likes: '431',
-    forks: '1,123',
-    backgroundImage: require('@src/assets/image/tokyo.png'),
-  },
-  {
-    id: '3',
-    country: 'Italy',
-    likes: '431',
-    forks: '1,123',
-    backgroundImage: require('@src/assets/image/tokyo.png'),
-  },
-  {
-    id: '4',
-    country: 'Japan',
-    likes: '637',
-    forks: '2,853',
-    backgroundImage: require('@src/assets/image/tokyo.png'),
-  },
-  {
-    id: '5',
-    country: 'Italy',
-    likes: '431',
-    forks: '1,123',
-    backgroundImage: require('@src/assets/image/tokyo.png'),
-  },
-  {
-    id: '6',
-    country: 'Italy',
-    likes: '431',
-    forks: '1,123',
-    backgroundImage: require('@src/assets/image/tokyo.png'),
-  },
-  {
-    id: '7',
-    country: 'Italy',
-    likes: '431',
-    forks: '1,123',
-    backgroundImage: require('@src/assets/image/tokyo.png'),
-  },
-  {
-    id: '8',
-    country: 'Japan',
-    likes: '637',
-    forks: '2,853',
-    backgroundImage: require('@src/assets/image/tokyo.png'),
-  },
-  {
-    id: '9',
-    country: 'Italy',
-    likes: '431',
-    forks: '1,123',
-    backgroundImage: require('@src/assets/image/tokyo.png'),
-  },
-  {
-    id: '10',
-    country: 'Italy',
-    likes: '431',
-    forks: '1,123',
-    backgroundImage: require('@src/assets/image/tokyo.png'),
-  },
-  {
-    id: '11',
-    country: 'Italy',
-    likes: '431',
-    forks: '1,123',
-    backgroundImage: require('@src/assets/image/tokyo.png'),
-  },
-  {
-    id: '12',
-    country: 'Japan',
-    likes: '637',
-    forks: '2,853',
-    backgroundImage: require('@src/assets/image/tokyo.png'),
-  },
-  {
-    id: '13',
-    country: 'Italy',
-    likes: '431',
-    forks: '1,123',
-    backgroundImage: require('@src/assets/image/tokyo.png'),
-  },
-  {
-    id: '14',
-    country: 'Italy',
-    likes: '431',
-    forks: '1,123',
-    backgroundImage: require('@src/assets/image/tokyo.png'),
-  },
-  {
-    id: '15',
-    country: 'Italy',
-    likes: '431',
-    forks: '1,123',
-    backgroundImage: require('@src/assets/image/tokyo.png'),
-  },
-];
-
-const renderItem = ({item}) => {
-  return <PlanCardType3 {...item} />;
+const renderItem = ({
+  item,
+  index,
+  isMyPage,
+}: {
+  item: any;
+  index: number;
+  isMyPage: boolean;
+}) => {
+  return <PlanCardType3 plan={item} index={index} isMyPage={isMyPage} />;
 };
 
-const UserScreen = () => {
+type Props = BottomTabScreenProps<MainTabsParamsList, 'UserScreen', 'Tab'>;
+
+const UserScreen = ({route, navigation}: Props) => {
+  const [user, setUser] = useState();
   const [plans, setPlans] = useState();
+  const [isMyPage, setIsMyPage] = useState(true);
 
-  useEffect(() => {
-    const getUserPlans = async () => {
-      const userResponse = await axiosInstance.get(`/users/1`);
-      const userPlanResponse = await axiosInstance.get(`/users/1/plans`);
-      console.log('UserScreen', userResponse.data);
-      console.log('UserScreen', userPlanResponse.data);
-    };
+  // useEffect(() => {
+  //   const getUserPlans = async () => {
+  //     let userId = route.params.userId;
 
-    getUserPlans();
-  }, []);
+  //     if (userId === 0) {
+  //       const userSession = await EncryptedStorage.getItem('user_session');
+  //       userId = userSession && JSON.parse(userSession).userId;
+  //     }
+
+  //     const userResponse = await axiosInstance.get(`/users/${userId}`);
+  //     const userPlanResponse = await axiosInstance.get(`/users/${userId}`);
+
+  //     console.log('UserScreen', userResponse.data);
+  //     console.log('UserScreen', userPlanResponse.data);
+  //     setUser(userResponse.data);
+  //     setPlans(userPlanResponse.data);
+  //   };
+
+  //   getUserPlans();
+  // }, [route.params.userId]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const getUserPlans = async () => {
+        let userId = route.params.userId;
+
+        const userSession = await EncryptedStorage.getItem('user_session');
+        setIsMyPage(
+          userId === 0 ||
+            userId === (userSession && JSON.parse(userSession).userId),
+        );
+        if (userId === 0) {
+          userId = userSession && JSON.parse(userSession).userId;
+        }
+
+        const userResponse = await axiosInstance.get(`/users/${userId}`);
+        const userPlanResponse = await axiosInstance.get(
+          `/users/${userId}/plans`,
+        );
+
+        console.log('UserScreen', userResponse.data);
+        console.log('UserScreen', userPlanResponse.data);
+        setUser(userResponse.data);
+        setPlans(userPlanResponse.data);
+      };
+
+      getUserPlans();
+    }, [route.params.userId]),
+  );
 
   return (
-    <FlatList
-      data={dummyData}
-      renderItem={renderItem}
-      keyExtractor={item => item.id}
-      numColumns={2} // Set the number of columns you want
-      columnWrapperStyle={styles.column}
-    />
+    <View style={styles.container}>
+      <ProfileBar user={user} />
+      <FlatList
+        data={plans}
+        renderItem={({item, index}) => renderItem({item, index, isMyPage})}
+        keyExtractor={item => item.planId}
+        numColumns={2} // Set the number of columns you want
+        columnWrapperStyle={styles.column}
+      />
+    </View>
   );
 };
 

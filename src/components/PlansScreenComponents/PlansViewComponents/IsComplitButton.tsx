@@ -1,4 +1,4 @@
-import SaveIcon from '@src/assets/icons/icon-save.svg';
+import SendIcon from '@src/assets/icons/Send_fill.svg';
 import {
   StyledRoundPressable,
   StyledRoundPressableView,
@@ -6,21 +6,19 @@ import {
 import {ROUND_ICON_SIZE, WHITE_PRESSED} from '@src/styles/globalStyleVariables';
 import React from 'react';
 
-const PlansSave = ({savePlan}: {savePlan: () => Promise<void>}) => {
+const PlansComplit = ({onPress}: {onPress: () => void}) => {
   return (
-    <StyledRoundPressableView
-      style={{
-        position: 'absolute',
-        top: 10,
-        right: 10,
-        zIndex: 9,
-      }}>
+    <StyledRoundPressableView>
       <StyledRoundPressable
-        onPress={savePlan}
+        onPress={onPress}
         android_ripple={{color: WHITE_PRESSED, foreground: true}}>
-        <SaveIcon width={ROUND_ICON_SIZE} height={ROUND_ICON_SIZE} />
+        <SendIcon
+          width={ROUND_ICON_SIZE}
+          height={ROUND_ICON_SIZE}
+          style={{color: '#ffffff'}}
+        />
       </StyledRoundPressable>
     </StyledRoundPressableView>
   );
 };
-export default React.memo(PlansSave);
+export default React.memo(PlansComplit);

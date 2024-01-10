@@ -1,5 +1,3 @@
-import {useNavigation} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
 import {
   StyledPressable,
   StyledPressableView,
@@ -15,30 +13,57 @@ import globalStyles from '@src/styles/style';
 import React from 'react';
 import {Text} from 'react-native';
 
-import {MainStackParamsList} from '../../../../types';
+import PlansPlace from './PlansPlace';
+import {PlanPlace} from '../../../../types';
 
-export const PlansEditDays = ({day}: {day: number}) => {
-  const navigation = useNavigation<StackNavigationProp<MainStackParamsList>>();
-  const handleNewPlace = () => {
-    navigation.navigate('SearchPlaceScreen');
-  };
-  return (
-    <React.Fragment>
-      <Text
-        style={[
-          globalStyles.h4,
-          {color: BLACK, marginTop: HEADING_VERTICAL_MARGIN},
-        ]}>
-        {day}일차
-      </Text>
-      <StyledPressableView>
-        <StyledPressable
-          onPress={handleNewPlace}
-          android_ripple={{color: BLUE_LIGHT_PRESSED}}
-          style={{backgroundColor: BLUE_LIGHT}}>
-          <Text style={[globalStyles.h5, {color: BLUE}]}>추가하기</Text>
-        </StyledPressable>
-      </StyledPressableView>
-    </React.Fragment>
-  );
-};
+export const PlansEditDays = React.memo(
+  ({
+    day,
+    date,
+    places,
+    openModal,
+    openNewModal,
+    changeCash,
+  }: {
+    day: number;
+    date: number;
+    places: PlanPlace[];
+    openModal: (id: number) => void;
+    openNewModal: (orderInDay: number, visitDate: number) => void;
+    changeCash: (planPlaceId: number, money: number) => void;
+  }) => {
+    const handleNewPlace = () => {
+      openNewModal(places.length + 1, date);
+    };
+    return (
+      <React.Fragment>
+        <Text
+          style={[
+            globalStyles.h4,
+            {color: BLACK, marginTop: HEADING_VERTICAL_MARGIN},
+          ]}>
+          {day}일차
+        </Text>
+        {places.map((place, index) => (
+          <PlansPlace
+            key={index}
+            name={place.place.name}
+            type={place.place.placeType}
+            cash={place.money}
+            planPlaceId={place.planPlaceId}
+            openModal={openModal}
+            changeCash={changeCash}
+          />
+        ))}
+        <StyledPressableView>
+          <StyledPressable
+            onPress={handleNewPlace}
+            android_ripple={{color: BLUE_LIGHT_PRESSED}}
+            style={{backgroundColor: BLUE_LIGHT}}>
+            <Text style={[globalStyles.h5, {color: BLUE}]}>추가하기</Text>
+          </StyledPressable>
+        </StyledPressableView>
+      </React.Fragment>
+    );
+  },
+);
