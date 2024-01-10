@@ -170,6 +170,10 @@ const PlanCardType1 = ({plan}: {plan: any}) => {
     navigation.navigate('PlanViewScreen', {planId: plan.planId});
   };
 
+  const handleUserCard = () => {
+    navigation.navigate('UserScreen', {userId: plan.userId.userId});
+  };
+
   return (
     <StyledCardPressableView>
       <StyledCardPressable
@@ -194,10 +198,12 @@ const PlanCardType1 = ({plan}: {plan: any}) => {
                 {plan.city} - {formattedDuration}
               </Text>
             </View>
-            <Image
-              source={{uri: plan.userId.image}}
-              style={styles.profileImage}
-            />
+            <TouchableOpacity onPress={handleUserCard}>
+              <Image
+                source={{uri: plan.userId.image}}
+                style={styles.profileImage}
+              />
+            </TouchableOpacity>
           </View>
 
           <View style={styles.interactionContainer}>
