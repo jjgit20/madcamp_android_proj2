@@ -11,8 +11,9 @@ import {
   WHITE_PRESSED,
 } from '@src/styles/globalStyleVariables';
 import globalStyles from '@src/styles/style';
+import axiosInstance from '@src/utils/axiosService';
 import {differenceInDays, parseISO} from 'date-fns';
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -129,6 +130,23 @@ export const getFormattedDurationInDays = (start?: string, end?: string) => {
 
 const PlanCardType1 = ({plan}: {plan: any}) => {
   const navigation = useNavigation<StackNavigationProp<MainStackParamsList>>();
+  const [user, setUser] = useState();
+
+  const handlePressLike = () => {
+    const getUserPlans = async () => {
+      const userResponse = await axiosInstance.patch(`/plans/${plan}/like`);
+      setUser(userResponse.data);
+    };
+    getUserPlans();
+  };
+
+  const handlePressFork = () => {
+    const getUserPlans = async () => {
+      const userResponse = await axiosInstance.post(`/plans/${plan}/fork`);
+      setUser(userResponse.data);
+    };
+    getUserPlans();
+  };
 
   if (!plan) return null;
   const iconSize = 24;
@@ -183,7 +201,9 @@ const PlanCardType1 = ({plan}: {plan: any}) => {
           </View>
 
           <View style={styles.interactionContainer}>
-            <TouchableOpacity style={styles.interactionTextContainer}>
+            <TouchableOpacity
+              onPress={handlePressLike}
+              style={styles.interactionTextContainer}>
               <FavoritIcon
                 width={iconSize}
                 height={iconSize}
@@ -191,7 +211,9 @@ const PlanCardType1 = ({plan}: {plan: any}) => {
               />
               <Text style={styles.interactionText}>{totalLikes}</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.interactionTextContainer}>
+            <TouchableOpacity
+              onPress={handlePressFork}
+              style={styles.interactionTextContainer}>
               <ForkIcon
                 width={iconSize}
                 height={iconSize}
